@@ -1,17 +1,13 @@
-import { Text, View } from "react-native";
+import { Redirect } from "expo-router";
 import '../global.css';
 
 export default function Index() {
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-      <Text className="bg-green-700 text-white">TEST</Text>
-    </View>
-  );
+  // ⚠️ Simula si el usuario está logueado o no
+  const isLoggedIn = false;
+
+  if (isLoggedIn) {
+    return <Redirect href="/(tabs)/home" />;
+  } else {
+    return <Redirect href="/(auth)/login" />;
+  }
 }
