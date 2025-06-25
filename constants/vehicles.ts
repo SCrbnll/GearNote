@@ -1,0 +1,15 @@
+export const VEHICLES = [
+  { id: "1", name: "Suzuki Marauder", plate: "3030FFP" },
+  { id: "2", name: "Citroën Picasso", plate: "5113DBN" },
+  { id: "3", name: "Seat Ibiza FR", plate: "3972HSG" },
+  { id: "4", name: "No Data", plate: "0000XXX" },
+  { id: "5", name: "No Data", plate: "0000XXX" },
+  { id: "6", name: "No Data", plate: "0000XXX" },
+  { id: "7", name: "No Data", plate: "0000XXX" },
+  { id: "8", name: "No Data", plate: "0000XXX" },
+  { id: "9", name: "No Data", plate: "0000XXX" },
+  { id: "10", name: "No Data", plate: "0000XXX" },
+  { id: "11", name: "No Data", plate: "0000XXX" },
+  { id: "12", name: "No Data", plate: "0000XXX" },
+  { id: "13", name: "No Data", plate: "0000XXX" },
+];
