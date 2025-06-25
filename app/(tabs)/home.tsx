@@ -1,7 +1,7 @@
 import VehicleCard from "@/components/VehicleCard";
 import { VEHICLES } from "@/constants/vehicles";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 export default function HomeScreen() {
@@ -16,13 +16,15 @@ export default function HomeScreen() {
     <View className="flex-1 bg-ui-body p-5">
       <View className="flex-row justify-between items-center mb-4">
         <Text className="text-primary text-lg font-bold">MIS VEHÍCULOS</Text>
-        <TouchableOpacity
-          className="bg-primary px-3 py-2 rounded-full flex-row items-center gap-1"
-          onPress={() => router.push("/vehicles")}
-        >
-          <Ionicons name="add-circle-outline" size={20} color="black" />
-          <Text className="text-black font-semibold mr-2">Agregar</Text>
-        </TouchableOpacity>
+        <Link href="/vehicles" asChild>
+          <TouchableOpacity
+            className="bg-primary px-3 py-2 rounded-full flex-row items-center gap-1"
+            onPress={() => router.push("/vehicles")}
+          >
+            <Ionicons name="add-circle-outline" size={20} color="black" />
+            <Text className="text-black font-semibold mr-2">Agregar</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
 
       <FlatList
@@ -36,6 +38,7 @@ export default function HomeScreen() {
 
           return (
             <VehicleCard
+              id={item.id}
               name={item.name}
               plate={item.plate}
             />
