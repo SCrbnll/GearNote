@@ -13,7 +13,9 @@ export default function VehicleInfoScreen() {
   const vehicle = VEHICLES.find((v) => v.id === id);
 
   const [showConfirm, setShowConfirm] = useState(false);
-  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(null);
+  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(
+    null
+  );
 
   if (!vehicle) {
     return (
@@ -77,23 +79,42 @@ export default function VehicleInfoScreen() {
           <Ionicons name="link-outline" size={20} color="#FE9525" />
         </TouchableOpacity>
 
-        <View>
-          <Text className="text-secondary text-base mb-3">
+        <View className="flex-1">
+          <Text className="text-error text-base mb-2">
             Últimos mantenimientos
           </Text>
+
           <FlatList
-            data={HISTORY.splice(0, 3)}
+            data={HISTORY.filter((item) => item.vehicle_id === vehicle.id)}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <HistoryItem item={item} />}
-            scrollEnabled={false}
+            showsVerticalScrollIndicator={false}
           />
         </View>
 
         <View className="flex-row justify-between mt-6 space-x-3 gap-6">
-          <TouchableOpacity className="flex-1 bg-ui-header rounded-xl py-3 items-center" onPress={() => console.log("Editar vehículo")}>
+          <TouchableOpacity
+            className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center"
+            onPress={() => console.log("Editar vehículo")}
+          >
+            <Ionicons
+              name="create-outline"
+              size={20}
+              color="#FE9525"
+              style={{ marginRight: 10 }}
+            />
             <Text className="text-primary font-medium">Editar</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 bg-red-700 rounded-xl py-3 items-center" onPress={handleDelete}>
+          <TouchableOpacity
+            className="flex-1 flex-row bg-red-700 rounded-xl py-3 items-center justify-center"
+            onPress={handleDelete}
+          >
+            <Ionicons
+              name="trash-outline"
+              size={20}
+              color="#FE9525"
+              style={{ marginRight: 10 }}
+            />
             <Text className="text-white font-medium">Eliminar</Text>
           </TouchableOpacity>
         </View>
