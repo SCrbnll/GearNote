@@ -37,11 +37,11 @@ export default function NotesModal({
 
           <View className="flex-row justify-end space-x-6 mt-4 gap-4">
             <TouchableOpacity onPress={onCancel}>
-              <Text className="text-white text-base">Cancelar</Text>
+              <Text className="text-error font-semibold text-base">Cancelar</Text>
             </TouchableOpacity>
 
             <TouchableOpacity onPress={onSave}>
-              <Text className="text-success font-bold text-base">Guardar</Text>
+              <Text className="text-success font-semibold text-base">Guardar</Text>
             </TouchableOpacity>
           </View>
         </View>

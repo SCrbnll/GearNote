@@ -31,7 +31,7 @@ export default function ConfirmationModal({
               <Text className="text-error font-semibold">Cancelar</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={onConfirm}>
-              <Text className="text-primary font-semibold">Confirmar</Text>
+              <Text className="text-success font-semibold">Confirmar</Text>
             </TouchableOpacity>
           </View>
         </View>
