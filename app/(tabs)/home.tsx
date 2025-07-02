@@ -18,7 +18,8 @@ export default function HomeScreen() {
       km_total: "",
       engine: "",
       owner: "",
-      technical_sheet: ""
+      technical_sheet: "",
+      additional_info: ""
     });
   }
 

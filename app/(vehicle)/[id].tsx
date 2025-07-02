@@ -1,21 +1,31 @@
 import ConfirmationModal from "@/components/ConfirmationModal";
 import HistoryItem from "@/components/HistoryItem";
+import NotesModal from "@/components/NotesModal";
 import VehicleInfoCard from "@/components/VehicleInfoCard";
-import { HISTORY } from "@/constants/history";
+import { MAINTENANCE_HISTORY } from "@/constants/maintenance_history";
 import { VEHICLES } from "@/constants/vehicles";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { FlatList, Linking, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  Linking,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function VehicleInfoScreen() {
   const { id } = useLocalSearchParams();
   const vehicle = VEHICLES.find((v) => v.id === id);
+  const insets = useSafeAreaInsets();
 
   const [showConfirm, setShowConfirm] = useState(false);
-  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(
-    null
-  );
+  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(null);
+
+  const [notesVisible, setNotesVisible] = useState(false);
+  const [notes, setNotes] = useState(vehicle?.additional_info || "");
 
   if (!vehicle) {
     return (
@@ -41,8 +51,13 @@ export default function VehicleInfoScreen() {
     } else if (modalType === "delete") {
       console.log("Vehículo eliminado");
     }
-
     setShowConfirm(false);
+  };
+
+  const handleSaveNotes = () => {
+    console.log("Notas guardadas:", notes);
+    // Aquí puedes guardar notas en estado global o backend
+    setNotesVisible(false);
   };
 
   return (
@@ -56,7 +71,7 @@ export default function VehicleInfoScreen() {
         }}
       />
 
-      <View className="flex-1 bg-ui-body px-6 py-5 space-y-6">
+      <View className="flex-1 px-6 pt-5 pb-3">
         <View>
           <Text className="text-primary text-2xl font-bold">
             {vehicle.brand} {vehicle.model}
@@ -71,7 +86,11 @@ export default function VehicleInfoScreen() {
           onPress={handleRedirect}
         >
           <View className="flex-row items-center space-x-3">
-            <MaterialIcons name="document-scanner" size={20} color="#FE9525" />
+            <MaterialIcons
+              name="document-scanner"
+              size={20}
+              color="#FE9525"
+            />
             <Text className="text-success font-medium ml-2">
               Visualizar ficha técnica
             </Text>
@@ -80,19 +99,19 @@ export default function VehicleInfoScreen() {
         </TouchableOpacity>
 
         <View className="flex-1">
-          <Text className="text-error text-base mb-2">
-            Últimos mantenimientos
-          </Text>
-
+          <Text className="text-error text-base mb-2">Últimos mantenimientos</Text>
           <FlatList
-            data={HISTORY.filter((item) => item.vehicle_id === vehicle.id)}
+            data={MAINTENANCE_HISTORY.filter(
+              (item) => item.vehicle_id === vehicle.id
+            )}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <HistoryItem item={item} />}
             showsVerticalScrollIndicator={false}
           />
         </View>
 
-        <View className="flex-row justify-between mt-6 space-x-3 gap-6">
+        {/* Botones de acción */}
+        <View className="flex-row justify-between mt-6 space-x-3 gap-2">
           <TouchableOpacity
             className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center"
             onPress={() => console.log("Editar vehículo")}
@@ -105,6 +124,20 @@ export default function VehicleInfoScreen() {
             />
             <Text className="text-primary font-medium">Editar</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center"
+            onPress={() => setNotesVisible(true)}
+          >
+            <Ionicons
+              name="document-text-outline"
+              size={20}
+              color="#FE9525"
+              style={{ marginRight: 10 }}
+            />
+            <Text className="text-primary font-medium">Notas</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             className="flex-1 flex-row bg-red-700 rounded-xl py-3 items-center justify-center"
             onPress={handleDelete}
@@ -120,11 +153,20 @@ export default function VehicleInfoScreen() {
         </View>
       </View>
 
+      {/* Modal para notas */}
+      <NotesModal
+        visible={notesVisible}
+        notes={notes}
+        onChangeNotes={setNotes}
+        onSave={handleSaveNotes}
+        onCancel={() => setNotesVisible(false)}
+      />
+
       <ConfirmationModal
         visible={showConfirm}
         title={
           modalType === "redirect"
-            ? "¿Desea abrir la ficha técnica?\nSerá redirijido a una URL externa."
+            ? "¿Desea abrir la ficha técnica?\nSerá redirigido a una URL externa."
             : "¿Desea eliminar este vehículo?"
         }
         onConfirm={confirmAction}

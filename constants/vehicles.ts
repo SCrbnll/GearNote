@@ -10,7 +10,8 @@ export const VEHICLES = [
     engine: "250cc",
     owner: "Me / Other",
     plate: "0000XXX",
-    technical_sheet: "https://www.github.com/SCrbnll"
+    technical_sheet: "https://www.github.com/SCrbnll",
+    additional_info: "Aditional Info\nAditional Info 2\nAditional Info 3"
   },
   { 
     id: "2", 
@@ -23,6 +24,7 @@ export const VEHICLES = [
     engine: "2.0",
     owner: "Me / Other",
     plate: "0000XXX",
-    technical_sheet: "https://www.github.com/SCrbnll" 
+    technical_sheet: "https://www.github.com/SCrbnll",
+    additional_info: "Aditional Info\nAditional Info 2\nAditional Info 3"
   },
 ];
