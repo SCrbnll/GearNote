@@ -9,17 +9,26 @@ export default function HomeScreen() {
 
   const vehiclesWithPlaceholder = [...VEHICLES];
   if (vehiclesWithPlaceholder.length % 2 !== 0) {
-    vehiclesWithPlaceholder.push({ id: "blank", name: "", plate: "" });
+    vehiclesWithPlaceholder.push({
+      id: "blank", name: "", plate: "",
+      brand: "",
+      model: "",
+      year: "",
+      color: "",
+      km_total: "",
+      engine: "",
+      owner: "",
+      technical_sheet: ""
+    });
   }
 
   return (
     <View className="flex-1 bg-ui-body p-5">
       <View className="flex-row justify-between items-center mb-4">
         <Text className="text-primary text-lg font-bold">MIS VEHÍCULOS</Text>
-        <Link href="/vehicles" asChild>
+        <Link href="/maintenance" asChild>
           <TouchableOpacity
             className="bg-primary px-3 py-2 rounded-full flex-row items-center gap-1"
-            onPress={() => router.push("/vehicles")}
           >
             <Ionicons name="add-circle-outline" size={20} color="black" />
             <Text className="text-black font-semibold mr-2">Agregar</Text>

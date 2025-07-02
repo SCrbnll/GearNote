@@ -35,18 +35,18 @@ export default function TabLayout() {
         <Tabs.Screen
           name="home"
           options={{
-            title: "Inicio",
+            title: "Vehículos",
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home" size={size} color={color} />
+              <Ionicons name="car-sport" size={size} color={color} />
             ),
           }}
         />
         <Tabs.Screen
-          name="vehicles"
+          name="maintenance"
           options={{
-            title: "Vehículos",
+            title: "Mantenimientos",
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="car-sport" size={size} color={color} />
+              <Ionicons name="file-tray-full" size={size} color={color} />
             ),
           }}
         />
