@@ -56,7 +56,6 @@ export default function VehicleInfoScreen() {
 
   const handleSaveNotes = () => {
     console.log("Notas guardadas:", notes);
-    // Aquí puedes guardar notas en estado global o backend
     setNotesVisible(false);
   };
 
@@ -110,7 +109,6 @@ export default function VehicleInfoScreen() {
           />
         </View>
 
-        {/* Botones de acción */}
         <View className="flex-row justify-between mt-6 space-x-3 gap-2">
           <TouchableOpacity
             className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center"
@@ -153,7 +151,6 @@ export default function VehicleInfoScreen() {
         </View>
       </View>
 
-      {/* Modal para notas */}
       <NotesModal
         visible={notesVisible}
         notes={notes}
