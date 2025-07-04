@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "gearnote",
+    "name": "GearNote",
     "slug": "gearnote",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/gearnote-icon.png",
     "scheme": "gearnote",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,24 +13,28 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/gearnote-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": false
+    },
+    "androidNavigationBar": {
+      "visible": true,
+      "barStyle": "dark-content",
+      "backgroundColor": "#000000"
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/gearnote-icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
+          "image": "./assets/images/gearnote-icon.png",
+          "resizeMode": "cover",
           "backgroundColor": "#ffffff"
         }
       ]
