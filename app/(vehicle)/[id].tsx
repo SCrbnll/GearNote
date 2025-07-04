@@ -5,7 +5,7 @@ import VehicleInfoCard from "@/components/VehicleInfoCard";
 import { MAINTENANCE_HISTORY } from "@/constants/maintenance_history";
 import { VEHICLES } from "@/constants/vehicles";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Link, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
@@ -14,12 +14,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function VehicleInfoScreen() {
   const { id } = useLocalSearchParams();
   const vehicle = VEHICLES.find((v) => v.id === id);
-  const insets = useSafeAreaInsets();
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [modalType, setModalType] = useState<"delete" | "redirect" | null>(null);
@@ -110,18 +108,19 @@ export default function VehicleInfoScreen() {
         </View>
 
         <View className="flex-row justify-between mt-6 space-x-3 gap-2">
-          <TouchableOpacity
-            className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center"
-            onPress={() => console.log("Editar vehículo")}
-          >
-            <Ionicons
-              name="create-outline"
-              size={20}
-              color="#FE9525"
-              style={{ marginRight: 10 }}
-            />
-            <Text className="text-primary font-medium">Editar</Text>
-          </TouchableOpacity>
+          <Link href={{ pathname: "/edit/[id]", params: { id } }} asChild>
+            <TouchableOpacity
+              className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center"
+            >
+              <Ionicons
+                name="create-outline"
+                size={20}
+                color="#FE9525"
+                style={{ marginRight: 10 }}
+              />
+              <Text className="text-primary font-medium">Editar</Text>
+            </TouchableOpacity>
+          </Link>
 
           <TouchableOpacity
             className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center"

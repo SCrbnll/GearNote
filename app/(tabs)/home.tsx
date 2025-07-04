@@ -27,7 +27,7 @@ export default function HomeScreen() {
     <View className="flex-1 bg-ui-body p-5">
       <View className="flex-row justify-between items-center mb-4">
         <Text className="text-primary text-lg font-bold">MIS VEHÍCULOS</Text>
-        <Link href="/maintenance" asChild>
+        <Link href="/(vehicle)/create" asChild>
           <TouchableOpacity
             className="bg-primary px-3 py-2 rounded-full flex-row items-center gap-1"
           >
