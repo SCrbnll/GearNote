@@ -122,7 +122,7 @@ export default function EditVehicleScreen() {
     <>
       <Stack.Screen
         options={{
-          title: id ? "Editar vehículo" : "Nuevo vehículo",
+          title: "Editar vehículo",
           headerShown: true,
           headerStyle: { backgroundColor: "#1A3A66" },
           headerTintColor: "#FE9525",

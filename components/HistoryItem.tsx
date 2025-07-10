@@ -1,5 +1,5 @@
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
@@ -13,13 +13,10 @@ type Props = {
 export default function HistoryItem({ item, description }: Props) {
   const maxLength = 40;
   const title = item.title.length > maxLength ? `${item.title.slice(0, maxLength - 3)}...` : item.title;
+  const router = useRouter();
 
   return (
-    <Link
-      href={{ pathname: "/(maintenance)/[id]", params: { id: item.id } }}
-      asChild
-    >
-      <TouchableOpacity className="flex-row items-center justify-between bg-ui-header rounded-xl px-4 py-3 mb-3">
+      <TouchableOpacity className="flex-row items-center justify-between bg-ui-header rounded-xl px-4 py-3 mb-3" onPress={() => router.push(`/(maintenance)/${item.id}`)}>
         <View className="flex-row items-center space-x-3">
           <MaterialIcons name="build" size={20} color="#FE9525" />
           {description ? (
@@ -33,7 +30,6 @@ export default function HistoryItem({ item, description }: Props) {
         </View>
         <Ionicons name="chevron-forward" size={20} color="#FE9525" />
       </TouchableOpacity>
-    </Link>
   );
 }
 

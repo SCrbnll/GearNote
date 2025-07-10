@@ -1,3 +1,4 @@
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -11,7 +12,9 @@ import {
 } from "react-native";
 
 import AlertModal from "@/components/AlertModal";
+import DropdownModal from "@/components/DropdownModal";
 import { MAINTENANCE_HISTORY } from "@/constants/maintenance_history";
+import { VEHICLES } from "@/constants/vehicles";
 
 type Maintenance = {
   id?: string;
@@ -32,6 +35,7 @@ export default function EditMaintenanceScreen() {
     date: "",
   });
 
+  const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
@@ -52,16 +56,13 @@ export default function EditMaintenanceScreen() {
   };
 
   const handleSave = () => {
-    const requiredFields: (keyof Maintenance)[] = ["title", "date"];
-
+    const requiredFields: (keyof Maintenance)[] = ["title", "date", "vehicle_id"];
     const missing = requiredFields.filter(
       (field) => !maintenanceData[field]?.trim()
     );
 
     if (missing.length > 0) {
-      setModalMessage(
-        `Faltan campos obligatorios: ${missing.join(", ")}`
-      );
+      setModalMessage(`Faltan campos obligatorios: ${missing.join(", ")}`);
       setModalVisible(true);
       return;
     }
@@ -69,6 +70,8 @@ export default function EditMaintenanceScreen() {
     console.log("Mantenimiento actualizado:", maintenanceData);
     router.back();
   };
+
+  const selectedVehicle = VEHICLES.find((v) => v.id === maintenanceData.vehicle_id);
 
   return (
     <>
@@ -86,16 +89,26 @@ export default function EditMaintenanceScreen() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView className="flex-1 px-6 pt-4">
-          <View className="mb-4">
-            <Text className="text-primary font-semibold mb-1">Título *</Text>
-            <TextInput
-              className="bg-ui-header rounded-xl px-4 py-3 text-white"
-              value={maintenanceData.title}
-              onChangeText={(text) => updateField("title", text)}
-              placeholder="Ej: Cambio de aceite"
-              placeholderTextColor="#ccc"
-            />
-          </View>
+          <Text className="text-primary font-bold text-lg mb-2">Vehículo *</Text>
+          <TouchableOpacity
+            onPress={() => setShowVehicleModal(true)}
+            className="bg-ui-header rounded-xl p-4 mb-6 flex-row items-center justify-between"
+          >
+            {selectedVehicle ? (
+              <View className="flex-row items-center space-x-3">
+                <MaterialCommunityIcons name="car" size={24} color="#FE9525" />
+                <View className="ml-4">
+                  <Text className="text-white font-semibold">{selectedVehicle.name}</Text>
+                  <Text className="text-secondary text-sm">
+                    {selectedVehicle.brand} {selectedVehicle.model}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <Text className="text-secondary">Selecciona un vehículo</Text>
+            )}
+            <Ionicons name="chevron-down" size={20} color="#FE9525" />
+          </TouchableOpacity>
 
           <View className="mb-4">
             <Text className="text-primary font-semibold mb-1">Fecha *</Text>
@@ -106,6 +119,17 @@ export default function EditMaintenanceScreen() {
               placeholder="YYYY-MM-DD"
               placeholderTextColor="#ccc"
               keyboardType="numeric"
+            />
+          </View>
+
+          <View className="mb-4">
+            <Text className="text-primary font-semibold mb-1">Título *</Text>
+            <TextInput
+              className="bg-ui-header rounded-xl px-4 py-3 text-white"
+              value={maintenanceData.title}
+              onChangeText={(text) => updateField("title", text)}
+              placeholder="Ej: Cambio de aceite"
+              placeholderTextColor="#ccc"
             />
           </View>
 
@@ -133,6 +157,20 @@ export default function EditMaintenanceScreen() {
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <DropdownModal
+        visible={showVehicleModal}
+        selectedValue={maintenanceData.vehicle_id}
+        onSelect={(value) => {
+          updateField("vehicle_id", value);
+          setShowVehicleModal(false);
+        }}
+        onCancel={() => setShowVehicleModal(false)}
+        options={VEHICLES.map((v) => ({
+          label: `${v.name} (${v.brand} ${v.model})`,
+          value: v.id,
+        }))}
+      />
 
       <AlertModal
         visible={modalVisible}

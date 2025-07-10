@@ -20,19 +20,16 @@ export default function SettingsScreen() {
 
   return (
     <View className="flex-1 bg-ui-body px-6 pt-5 justify-between">
-      {/* Contenido principal */}
       <View>
-        {/* Perfil */}
         <View className="items-center mb-6">
           <Image
             source={require("./../../assets/images/user_pfp.png")}
-            className="w-24 h-24 rounded-full mb-3 bg-gray-300"
+            className="w-24 h-24 mb-3"
             resizeMode="cover"
           />
           <Text className="text-xl font-bold text-primary">SCrbnll</Text>
         </View>
 
-        {/* Botones */}
         <View className="space-y-3 mb-6 gap-3">
           <TouchableOpacity
             className="flex-row bg-ui-header rounded-xl py-4 px-5 items-center justify-center"

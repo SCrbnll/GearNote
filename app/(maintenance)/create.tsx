@@ -1,5 +1,6 @@
-import { Stack, useRouter } from "expo-router";
-import { useState } from "react";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
     KeyboardAvoidingView,
     Platform,
@@ -10,20 +11,21 @@ import {
     View,
 } from "react-native";
 
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-
 import AlertModal from "@/components/AlertModal";
 import DropdownModal from "@/components/DropdownModal";
+import { MAINTENANCE_HISTORY } from "@/constants/maintenance_history";
 import { VEHICLES } from "@/constants/vehicles";
 
 type Maintenance = {
+  id?: string;
   vehicle_id: string;
   title: string;
   description: string;
   date: string;
 };
 
-export default function CreateMaintenanceScreen() {
+export default function EditMaintenanceScreen() {
+  const { id } = useLocalSearchParams();
   const router = useRouter();
 
   const [maintenanceData, setMaintenanceData] = useState<Maintenance>({
@@ -34,15 +36,30 @@ export default function CreateMaintenanceScreen() {
   });
 
   const [showVehicleModal, setShowVehicleModal] = useState(false);
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  const selectedVehicle = VEHICLES.find((v) => v.id === maintenanceData.vehicle_id);
+  useEffect(() => {
+    if (id) {
+      const maintenance = MAINTENANCE_HISTORY.find((m) => m.id === String(id));
+      if (maintenance) {
+        setMaintenanceData(maintenance);
+      } else {
+        setModalMessage("Mantenimiento no encontrado.");
+        setModalVisible(true);
+      }
+    }
+  }, [id]);
+
+  const updateField = (field: keyof Maintenance, value: string) => {
+    setMaintenanceData((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSave = () => {
     const requiredFields: (keyof Maintenance)[] = ["title", "date", "vehicle_id"];
-    const missing = requiredFields.filter((field) => !maintenanceData[field]?.trim());
+    const missing = requiredFields.filter(
+      (field) => !maintenanceData[field]?.trim()
+    );
 
     if (missing.length > 0) {
       setModalMessage(`Faltan campos obligatorios: ${missing.join(", ")}`);
@@ -50,13 +67,11 @@ export default function CreateMaintenanceScreen() {
       return;
     }
 
-    console.log("Mantenimiento creado:", maintenanceData);
+    console.log("Mantenimiento actualizado:", maintenanceData);
     router.back();
   };
 
-    const updateField = (field: keyof Maintenance, value: string) => {
-    setMaintenanceData((prev) => ({ ...prev, [field]: value }));
-  };
+  const selectedVehicle = VEHICLES.find((v) => v.id === maintenanceData.vehicle_id);
 
   return (
     <>
@@ -74,7 +89,6 @@ export default function CreateMaintenanceScreen() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView className="flex-1 px-6 pt-4">
-
           <Text className="text-primary font-bold text-lg mb-2">Vehículo *</Text>
           <TouchableOpacity
             onPress={() => setShowVehicleModal(true)}
@@ -97,25 +111,25 @@ export default function CreateMaintenanceScreen() {
           </TouchableOpacity>
 
           <View className="mb-4">
-            <Text className="text-primary font-semibold mb-1">Título *</Text>
-            <TextInput
-              className="bg-ui-header rounded-xl px-4 py-3 text-white"
-              value={maintenanceData.title}
-              onChangeText={(text) => setMaintenanceData((prev) => ({ ...prev, title: text }))}
-              placeholder="Ej: Cambio de frenos"
-              placeholderTextColor="#ccc"
-            />
-          </View>
-
-          <View className="mb-4">
             <Text className="text-primary font-semibold mb-1">Fecha *</Text>
             <TextInput
               className="bg-ui-header rounded-xl px-4 py-3 text-white"
               value={maintenanceData.date}
               onChangeText={(text) => updateField("date", text)}
-              placeholder="DD-MM-YYYY"
+              placeholder="YYYY-MM-DD"
               placeholderTextColor="#ccc"
               keyboardType="numeric"
+            />
+          </View>
+
+          <View className="mb-4">
+            <Text className="text-primary font-semibold mb-1">Título *</Text>
+            <TextInput
+              className="bg-ui-header rounded-xl px-4 py-3 text-white"
+              value={maintenanceData.title}
+              onChangeText={(text) => updateField("title", text)}
+              placeholder="Ej: Cambio de aceite"
+              placeholderTextColor="#ccc"
             />
           </View>
 
@@ -123,10 +137,8 @@ export default function CreateMaintenanceScreen() {
             <Text className="text-primary font-semibold mb-1">Descripción</Text>
             <TextInput
               value={maintenanceData.description}
-              onChangeText={(text) =>
-                setMaintenanceData((prev) => ({ ...prev, description: text }))
-              }
-              placeholder="Escribe una descripción detallada..."
+              onChangeText={(text) => updateField("description", text)}
+              placeholder="Escribe una descripción..."
               placeholderTextColor="#ccc"
               multiline
               numberOfLines={6}
@@ -139,7 +151,9 @@ export default function CreateMaintenanceScreen() {
             className="bg-green-700 rounded-xl py-4 items-center mb-10"
             onPress={handleSave}
           >
-            <Text className="text-white font-bold text-base">Crear mantenimiento</Text>
+            <Text className="text-white font-bold text-base">
+              {id ? "Guardar cambios" : "Crear mantenimiento"}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -148,7 +162,7 @@ export default function CreateMaintenanceScreen() {
         visible={showVehicleModal}
         selectedValue={maintenanceData.vehicle_id}
         onSelect={(value) => {
-          setMaintenanceData((prev) => ({ ...prev, vehicle_id: value }));
+          updateField("vehicle_id", value);
           setShowVehicleModal(false);
         }}
         onCancel={() => setShowVehicleModal(false)}

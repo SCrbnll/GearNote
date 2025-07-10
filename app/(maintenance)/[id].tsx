@@ -51,8 +51,8 @@ export default function MaintenanceDetailScreen() {
       <View className="flex-1 bg-ui-body px-6 pt-5 pb-3">
 
         <Text className="text-primary font-bold text-lg mb-2">Vehículo</Text>
-        <Link href={{ pathname: "/(vehicle)/[id]", params: { id: vehicle.id } }} asChild>
-          <TouchableOpacity className="bg-ui-header rounded-xl p-4 mb-6 flex-row items-center justify-between">
+        
+          <TouchableOpacity className="bg-ui-header rounded-xl p-4 mb-6 flex-row items-center justify-between" onPress={() => router.push(`/(vehicle)/${id}`)}>
             <View className="flex-row items-center space-x-3">
               <MaterialCommunityIcons name="car" size={24} color="#FE9525" />
               <View className="ml-4">
@@ -64,11 +64,10 @@ export default function MaintenanceDetailScreen() {
             </View>
             <Ionicons name="chevron-forward" size={20} color="#FE9525" />
           </TouchableOpacity>
-        </Link>
 
         <Text className="text-primary font-bold text-lg mb-2">Detalles</Text>
         <View className="bg-ui-header rounded-xl p-4 mb-6">
-          <Text className="text-success font-semibold mb-1">{maintenance.title}</Text>
+          <Text className="text-success text-lg font-semibold mb-1">{maintenance.title}</Text>
           <Text className="text-white">{maintenance.description || "Sin descripción."}</Text>
         </View>
 
