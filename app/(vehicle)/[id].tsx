@@ -7,20 +7,16 @@ import { VEHICLES } from "@/constants/vehicles";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Link, Stack, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import {
-  FlatList,
-  Linking,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Linking, Text, TouchableOpacity, View } from "react-native";
 
 export default function VehicleInfoScreen() {
   const { id } = useLocalSearchParams();
   const vehicle = VEHICLES.find((v) => v.id === id);
 
   const [showConfirm, setShowConfirm] = useState(false);
-  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(null);
+  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(
+    null
+  );
 
   const [notesVisible, setNotesVisible] = useState(false);
   const [notes, setNotes] = useState(vehicle?.additional_info || "");
@@ -83,11 +79,7 @@ export default function VehicleInfoScreen() {
           onPress={handleRedirect}
         >
           <View className="flex-row items-center space-x-3">
-            <MaterialIcons
-              name="document-scanner"
-              size={20}
-              color="#FE9525"
-            />
+            <MaterialIcons name="document-scanner" size={20} color="#FE9525" />
             <Text className="text-success font-medium ml-2">
               Visualizar ficha técnica
             </Text>
@@ -96,7 +88,9 @@ export default function VehicleInfoScreen() {
         </TouchableOpacity>
 
         <View className="flex-1">
-          <Text className="text-error text-base mb-2">Últimos mantenimientos</Text>
+          <Text className="text-error text-base mb-2">
+            Últimos mantenimientos
+          </Text>
           <FlatList
             data={MAINTENANCE_HISTORY.filter(
               (item) => item.vehicle_id === vehicle.id
@@ -104,14 +98,23 @@ export default function VehicleInfoScreen() {
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => <HistoryItem item={item} />}
             showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <View className="mt-10 items-center">
+                <Ionicons name="car-outline" size={40} color="#FE9525" />
+                <Text className="text-primary text-sm mt-2 text-center">
+                  No hay mantenimientos registrados
+                </Text>
+              </View>
+            }
           />
         </View>
 
         <View className="flex-row justify-between mt-6 space-x-3 gap-2">
-          <Link href={{ pathname: "/edit/[id]", params: { id: vehicle.id } }} asChild>
-            <TouchableOpacity
-              className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center"
-            >
+          <Link
+            href={{ pathname: "/edit/[id]", params: { id: vehicle.id } }}
+            asChild
+          >
+            <TouchableOpacity className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center">
               <Ionicons
                 name="create-outline"
                 size={20}

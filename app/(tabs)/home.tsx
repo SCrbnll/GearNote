@@ -29,7 +29,7 @@ export default function HomeScreen() {
         <Text className="text-primary text-lg font-bold">MIS VEHÍCULOS</Text>
         <Link href="/(vehicle)/create" asChild>
           <TouchableOpacity
-            className="bg-primary px-3 py-2 rounded-full flex-row items-center gap-1"
+            className="bg-primary px-3 py-1 rounded-full flex-row items-center gap-1"
           >
             <Ionicons name="add-circle-outline" size={20} color="black" />
             <Text className="text-black font-semibold mr-2">Agregar</Text>
