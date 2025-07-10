@@ -1,9 +1,78 @@
-import { Text, View } from 'react-native';
+import DropdownModal from "@/components/DropdownModal";
+import HistoryItem from "@/components/HistoryItem";
+import { MAINTENANCE_HISTORY } from "@/constants/maintenance_history";
+import { VEHICLES } from "@/constants/vehicles";
+import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
-export default function VehiclesScreen() {
+export default function MaintenanceScreen() {
+  const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const vehicleOptions = [
+    { label: "Todos los vehículos", value: "" },
+    ...VEHICLES.map((v) => ({
+      label: `${v.name} (${v.plate})`,
+      value: v.id,
+    })),
+  ];
+
+  const filteredHistory = selectedVehicleId
+    ? MAINTENANCE_HISTORY.filter((m) => m.vehicle_id === selectedVehicleId)
+    : MAINTENANCE_HISTORY;
+
   return (
-    <View className="flex-1 justify-center items-center bg-white">
-      <Text className="text-xl font-bold text-green-700">Pantalla Mantenimientos</Text>
+    <View className="flex-1 bg-ui-body px-6 pt-6">
+      <View className="mb-4">
+        <Text className="text-primary text-lg font-bold mb-2">
+          MANTENIMIENTOS
+        </Text>
+
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          className="bg-ui-header py-3 px-4 rounded-xl mb-2 flex-row justify-between items-center"
+        >
+          <Text className="text-white font-medium">
+            {vehicleOptions.find((v) => v.value === selectedVehicleId)?.label ||
+              "Seleccionar vehículo"}
+          </Text>
+          <Ionicons name="chevron-down-outline" size={20} color="#FE9525" />
+        </TouchableOpacity>
+      </View>
+
+      <FlatList
+        data={filteredHistory}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity>
+            <HistoryItem
+              item={item}
+              description={VEHICLES.find((v) => v.id === item.vehicle_id)?.name}
+            />
+          </TouchableOpacity>
+        )}
+        ListEmptyComponent={
+          <View className="mt-10 items-center">
+            <Ionicons name="car-outline" size={40} color="#FE9525" />
+            <Text className="text-primary text-sm mt-2 text-center">
+              No hay mantenimientos registrados
+            </Text>
+          </View>
+        }
+        showsVerticalScrollIndicator={false}
+      />
+
+      <DropdownModal
+        visible={modalVisible}
+        selectedValue={selectedVehicleId}
+        options={vehicleOptions}
+        onSelect={(value) => {
+          setSelectedVehicleId(value);
+          setModalVisible(false);
+        }}
+        onCancel={() => setModalVisible(false)}
+      />
     </View>
   );
 }

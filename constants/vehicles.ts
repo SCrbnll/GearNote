@@ -26,5 +26,5 @@ export const VEHICLES = [
     plate: "0000XXX",
     technical_sheet: "https://www.github.com/SCrbnll",
     additional_info: "Aditional Info\nAditional Info 2\nAditional Info 3"
-  },
+  }
 ];

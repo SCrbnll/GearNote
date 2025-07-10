@@ -108,7 +108,7 @@ export default function VehicleInfoScreen() {
         </View>
 
         <View className="flex-row justify-between mt-6 space-x-3 gap-2">
-          <Link href={{ pathname: "/edit/[id]", params: { id } }} asChild>
+          <Link href={{ pathname: "/edit/[id]", params: { id: vehicle.id } }} asChild>
             <TouchableOpacity
               className="flex-1 flex-row bg-ui-header rounded-xl py-3 items-center justify-center"
             >
