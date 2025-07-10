@@ -79,7 +79,7 @@ export default function AuthScreen() {
             />
 
             <Text className="text-white text-2xl font-bold mb-2">
-              ¡Bienvenido!
+              ¡Bienvenido a Gearnote!
             </Text>
             <Text className="text-secondary text-center mb-8">
               Elige una opción para continuar
