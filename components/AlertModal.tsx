@@ -24,7 +24,7 @@ export default function AlertModal({
           <Text className="text-primary font-bold text-lg p-2">{title}</Text>
           {description && <Text className="text-secondary p-2">{description}</Text>}
 
-          <View className="flex-row justify-end gap-4 mt-2">
+          <View className="flex-row justify-end mt-2">
             <TouchableOpacity onPress={onCancel}>
               <Text className="text-error font-semibold">Cerrar</Text>
             </TouchableOpacity>

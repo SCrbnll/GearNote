@@ -1,13 +1,13 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import AlertModal from "@/components/AlertModal";
@@ -89,7 +89,7 @@ export default function EditVehicleScreen() {
       return;
     }
 
-    console.log(id ? "Vehículo actualizado:" : "Vehículo creado:", vehicleData);
+    console.log( "Vehículo actualizado:", vehicleData);
     router.back();
   };
 
@@ -122,7 +122,7 @@ export default function EditVehicleScreen() {
     <>
       <Stack.Screen
         options={{
-          title: id ? "Editar vehículo" : "Nuevo vehículo",
+          title: "Editar vehículo",
           headerShown: true,
           headerStyle: { backgroundColor: "#1A3A66" },
           headerTintColor: "#FE9525",
