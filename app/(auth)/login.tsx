@@ -1,4 +1,5 @@
 import AlertModal from "@/components/AlertModal";
+import { initDatabase, insertUser } from "@/utils/database";
 import * as DocumentPicker from "expo-document-picker";
 import { Stack, router } from "expo-router";
 import { useState } from "react";
@@ -47,15 +48,23 @@ export default function AuthScreen() {
     }
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!username.trim()) {
       setmodalTitle("Error");
       setModalMessage("Por favor, ingresa un nombre de usuario.");
       setModalVisible(true);
       return;
     }
-    console.log("Usuario registrado:", username);
-    router.replace("/(tabs)/home");
+    try{
+      await initDatabase();
+      await insertUser(username);
+      router.replace("/(tabs)/home");
+    } catch (err) {
+      console.log("Error al registrar usuario:", err);
+      setmodalTitle("Error");
+      setModalMessage("No se pudo registrar el usuario.");
+      setModalVisible(true);
+    }
   };
 
   return (

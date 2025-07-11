@@ -1,27 +1,54 @@
 import DropdownModal from "@/components/DropdownModal";
 import HistoryItem from "@/components/HistoryItem";
-import { MAINTENANCE_HISTORY } from "@/constants/maintenance_history";
-import { VEHICLES } from "@/constants/vehicles";
+import { Maintenance, Vehicle } from "@/types/type-db";
+import { getAllMaintenances, getAllVehicles } from "@/utils/database";
 import { Ionicons } from "@expo/vector-icons";
-import { Link } from "expo-router";
-import { useState } from "react";
+import { Link, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 export default function MaintenanceScreen() {
-  const [selectedVehicleId, setSelectedVehicleId] = useState<string>("");
+  const [maintenances, setMaintenances] = useState<Maintenance[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [selectedVehicleId, setSelectedVehicleId] = useState<number>(0);
   const [modalVisible, setModalVisible] = useState(false);
 
+  useFocusEffect(
+    useCallback(() => {
+      const fetchMaintenances = async () => {
+        try {
+          const data = await getAllMaintenances();
+          setMaintenances(data);
+        } catch (err) {
+          console.error("Error al obtener mantenimientos:", err);
+        }
+      };
+
+      const fetchVehicles = async () => {
+        try {
+          const data = await getAllVehicles();
+          setVehicles(data);
+        } catch (err) {
+          console.error("Error al obtener vehículos:", err);
+        }
+      };
+
+      fetchMaintenances();
+      fetchVehicles();
+    }, [])
+  );
+
   const vehicleOptions = [
-    { label: "Todos los vehículos", value: "" },
-    ...VEHICLES.map((v) => ({
+    { label: "Todos los vehículos", value: 0 },
+    ...vehicles.map((v) => ({
       label: `${v.name} (${v.plate})`,
-      value: v.id,
+      value: v.id!,
     })),
   ];
 
   const filteredHistory = selectedVehicleId
-    ? MAINTENANCE_HISTORY.filter((m) => m.vehicle_id === selectedVehicleId)
-    : MAINTENANCE_HISTORY;
+    ? maintenances.filter((m) => m.vehicle_id === selectedVehicleId )
+    : maintenances;
 
   return (
     <View className="flex-1 bg-ui-body px-6 pt-6">
@@ -41,8 +68,7 @@ export default function MaintenanceScreen() {
           className="bg-ui-header py-3 px-4 rounded-xl mb-2 flex-row justify-between items-center"
         >
           <Text className="text-white font-medium">
-            {vehicleOptions.find((v) => v.value === selectedVehicleId)?.label ||
-              "Seleccionar vehículo"}
+            {vehicleOptions.find((v) => v.value == selectedVehicleId!)?.label || "Todos los vehículos"}
           </Text>
           <Ionicons name="chevron-down-outline" size={20} color="#FE9525" />
         </TouchableOpacity>
@@ -50,18 +76,20 @@ export default function MaintenanceScreen() {
 
       <FlatList
         data={filteredHistory}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <TouchableOpacity>
             <HistoryItem
               item={item}
-              description={VEHICLES.find((v) => v.id === item.vehicle_id)?.name}
+              description={
+                vehicles.find((v) => v.id === item.vehicle_id)?.name || "Sin descripción"
+              }
             />
           </TouchableOpacity>
         )}
         ListEmptyComponent={
           <View className="mt-10 items-center">
-            <Ionicons name="car-outline" size={40} color="#FE9525" />
+            <Ionicons name="clipboard-outline" size={40} color="#FE9525" />
             <Text className="text-primary text-sm mt-2 text-center">
               No hay mantenimientos registrados
             </Text>
@@ -72,7 +100,7 @@ export default function MaintenanceScreen() {
 
       <DropdownModal
         visible={modalVisible}
-        selectedValue={selectedVehicleId}
+        selectedValue={selectedVehicleId!}
         options={vehicleOptions}
         onSelect={(value) => {
           setSelectedVehicleId(value);

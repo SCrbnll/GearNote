@@ -1,18 +1,16 @@
-// components/DropdownModal.tsx
-
 import { Modal, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 type Option = {
   label: string;
-  value: string;
+  value: any;
 };
 
 type Props = {
   visible: boolean;
   options: Option[];
-  onSelect: (value: string) => void;
+  onSelect: (value: number) => void;
   onCancel: () => void;
-  selectedValue: string;
+  selectedValue: number;
 };
 
 export default function DropdownModal({

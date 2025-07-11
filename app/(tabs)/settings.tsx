@@ -1,24 +1,65 @@
+import ConfirmationModal from "@/components/ConfirmationModal";
+import { clearDatabase, getUserName } from "@/utils/database";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { Image, Linking, Text, TouchableOpacity, View } from "react-native";
 
 export default function SettingsScreen() {
-  const handleGitHubRedirect = () => {
+  const router = useRouter();
+  const [username, setUsername] = useState<string>();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [modalType, setModalType] = useState<"export" | "delete" | null>(null);
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const data = await getUserName();
+        setUsername(data?.name ?? "User");
+      } catch (err) {
+        console.error("Error al obtener los datos del usuario:", err);
+      }
+    };
+  
+    fetchUserName();
+  }, []);
+  
+
+  const handlePortfolioRedirect = () => {
     Linking.openURL("https://samuelcg.com");
   };
 
   const handleViewData = () => {
-    console.log("Ver mis datos");
-  };
-
-  const handleImportData = () => {
-    console.log("Cargar datos desde archivo");
+    router.push("/(debug)/view-db");
   };
 
   const handleExportData = () => {
-    console.log("Exportar datos a archivo");
+    setModalType("export");
+    setShowConfirm(true);
   };
 
+  const handleDeleteData = async () => {
+    setModalType("delete");
+    setShowConfirm(true);
+  };
+
+  const confirmAction = async () => {
+      if (modalType === "export") {
+        console.log("Exportar datos");
+      } else if (modalType === "delete") {
+        try{
+          await clearDatabase();
+          router.replace("/(auth)/login");
+
+        } catch (err) {
+          console.error("Error al eliminar datos:", err);
+        }
+      }
+      setShowConfirm(false);
+    };
+
   return (
+    <>
     <View className="flex-1 bg-ui-body px-6 pt-5 justify-between">
       <View>
         <View className="items-center mb-6">
@@ -27,7 +68,7 @@ export default function SettingsScreen() {
             className="w-24 h-24 mb-3"
             resizeMode="cover"
           />
-          <Text className="text-xl font-bold text-primary">SCrbnll</Text>
+          <Text className="text-xl font-bold text-primary">{username}</Text>
         </View>
 
         <View className="space-y-3 mb-6 gap-3">
@@ -41,20 +82,7 @@ export default function SettingsScreen() {
               color="#FE9525"
               style={{ marginRight: 10 }}
             />
-            <Text className="text-primary font-medium">Ver mis datos</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="flex-row bg-green-700 rounded-xl py-4 px-5 items-center justify-center"
-            onPress={handleImportData}
-          >
-            <Ionicons
-              name="cloud-upload-outline"
-              size={20}
-              color="#fff"
-              style={{ marginRight: 10 }}
-            />
-            <Text className="text-white font-medium">Cargar datos</Text>
+            <Text className="text-primary font-medium">Ver base de datos</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -69,11 +97,23 @@ export default function SettingsScreen() {
             />
             <Text className="text-white font-medium">Descargar datos</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            className="flex-row bg-red-600 rounded-xl py-4 px-5 items-center justify-center"
+            onPress={handleDeleteData}
+          >
+            <Ionicons
+              name="trash-outline"
+              size={20}
+              color="#fff"
+              style={{ marginRight: 10 }}
+            />
+            <Text className="text-white font-medium">Borrar datos</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
       <View className="items-center pb-6 justify-center">
-        <TouchableOpacity onPress={handleGitHubRedirect} className="items-center">
+        <TouchableOpacity onPress={handlePortfolioRedirect} className="items-center">
           <Text className="text-sm text-primary">App creada por</Text>
           <Text className="text-base font-bold text-success underline">
             Samuel Carbonell
@@ -82,5 +122,16 @@ export default function SettingsScreen() {
         <Text className="text-xs text-secondary mt-1">v1.0</Text>
       </View>
     </View>
+    <ConfirmationModal
+            visible={showConfirm}
+            title={
+              modalType === "export"
+                ? "¿Desea descargar los datos locales?"
+                : "¿Desea eliminar sus datos locales?"
+            }
+            onConfirm={confirmAction}
+            onCancel={() => setShowConfirm(false)}
+          />
+    </>
   );
 }

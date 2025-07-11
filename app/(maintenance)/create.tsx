@@ -1,65 +1,61 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { Stack, useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import AlertModal from "@/components/AlertModal";
 import DropdownModal from "@/components/DropdownModal";
-import { MAINTENANCE_HISTORY } from "@/constants/maintenance_history";
-import { VEHICLES } from "@/constants/vehicles";
-
-type Maintenance = {
-  id?: string;
-  vehicle_id: string;
-  title: string;
-  description: string;
-  date: string;
-};
+import { Maintenance, Vehicle } from "@/types/type-db";
+import { getAllVehicles, insertMaintenance } from "@/utils/database";
 
 export default function EditMaintenanceScreen() {
-  const { id } = useLocalSearchParams();
   const router = useRouter();
-
   const [maintenanceData, setMaintenanceData] = useState<Maintenance>({
-    vehicle_id: "",
+    vehicle_id: -1,
     title: "",
     description: "",
     date: "",
   });
+  const [vehiclesData, setVehiclesData] = useState<Vehicle[]>([]);
 
   const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  useEffect(() => {
-    if (id) {
-      const maintenance = MAINTENANCE_HISTORY.find((m) => m.id === String(id));
-      if (maintenance) {
-        setMaintenanceData(maintenance);
-      } else {
-        setModalMessage("Mantenimiento no encontrado.");
-        setModalVisible(true);
-      }
-    }
-  }, [id]);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchVehicle = async () => {
+        try {
+          const vehicles = await getAllVehicles();
+          setVehiclesData(vehicles);
+        } catch (err) {
+          console.error("Error al obtener los vehículos:", err);
+        }
+      };
 
-  const updateField = (field: keyof Maintenance, value: string) => {
+      fetchVehicle();
+    }, [])
+  );
+
+  const updateField = (field: keyof Maintenance, value: any) => {
     setMaintenanceData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    const requiredFields: (keyof Maintenance)[] = ["title", "date", "vehicle_id"];
-    const missing = requiredFields.filter(
-      (field) => !maintenanceData[field]?.trim()
-    );
+  const handleSave = async () => {
+    const requiredFields: (keyof Maintenance)[] = [
+      "title",
+      "date",
+      "vehicle_id",
+    ];
+    const missing = requiredFields.filter((field) => !maintenanceData[field]);
 
     if (missing.length > 0) {
       setModalMessage(`Faltan campos obligatorios: ${missing.join(", ")}`);
@@ -67,11 +63,27 @@ export default function EditMaintenanceScreen() {
       return;
     }
 
-    console.log("Mantenimiento actualizado:", maintenanceData);
-    router.back();
+    try {
+      await insertMaintenance(maintenanceData);
+      router.back();
+    } catch (err) {
+      console.error("Error al guardar el mantenimiento:", err);
+      setModalMessage("Ocurrió un error al guardar el mantenimiento.");
+      setModalVisible(true);
+    }
   };
 
-  const selectedVehicle = VEHICLES.find((v) => v.id === maintenanceData.vehicle_id);
+  const selectedVehicle = vehiclesData?.find(
+    (v) => v.id === maintenanceData.vehicle_id
+  );
+
+  const vehicleOptions = [
+    { label: "Seleccionar vehículo", value: 0 },
+    ...vehiclesData.map((v) => ({
+      label: `${v.name} (${v.brand} ${v.model})`,
+      value: v.id!,
+    })),
+  ];
 
   return (
     <>
@@ -89,7 +101,9 @@ export default function EditMaintenanceScreen() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView className="flex-1 px-6 pt-4">
-          <Text className="text-primary font-bold text-lg mb-2">Vehículo *</Text>
+          <Text className="text-primary font-bold text-lg mb-2">
+            Vehículo *
+          </Text>
           <TouchableOpacity
             onPress={() => setShowVehicleModal(true)}
             className="bg-ui-header rounded-xl p-4 mb-6 flex-row items-center justify-between"
@@ -98,7 +112,9 @@ export default function EditMaintenanceScreen() {
               <View className="flex-row items-center space-x-3">
                 <MaterialCommunityIcons name="car" size={24} color="#FE9525" />
                 <View className="ml-4">
-                  <Text className="text-white font-semibold">{selectedVehicle.name}</Text>
+                  <Text className="text-white font-semibold">
+                    {selectedVehicle.name}
+                  </Text>
                   <Text className="text-secondary text-sm">
                     {selectedVehicle.brand} {selectedVehicle.model}
                   </Text>
@@ -152,7 +168,7 @@ export default function EditMaintenanceScreen() {
             onPress={handleSave}
           >
             <Text className="text-white font-bold text-base">
-              {id ? "Guardar cambios" : "Crear mantenimiento"}
+              Crear mantenimiento
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -166,10 +182,7 @@ export default function EditMaintenanceScreen() {
           setShowVehicleModal(false);
         }}
         onCancel={() => setShowVehicleModal(false)}
-        options={VEHICLES.map((v) => ({
-          label: `${v.name} (${v.brand} ${v.model})`,
-          value: v.id,
-        }))}
+        options={vehicleOptions}
       />
 
       <AlertModal

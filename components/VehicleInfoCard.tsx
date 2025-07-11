@@ -29,11 +29,6 @@ export default function VehicleInfoCard({ vehicle }: Props) {
         value={`${vehicle.km_total} km`}
         icon={<MaterialIcons name="speed" size={16} color="#FE9525" />}
       />
-      <InfoRow
-        label="Propietario"
-        value={vehicle.owner}
-        icon={<Ionicons name="person" size={16} color="#FE9525" />}
-      />
     </View>
   );
 }
