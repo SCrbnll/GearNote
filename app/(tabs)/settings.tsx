@@ -1,3 +1,4 @@
+import ConfirmationModal from "@/components/ConfirmationModal";
 import { clearDatabase, getUserName } from "@/utils/database";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -7,6 +8,8 @@ import { Image, Linking, Text, TouchableOpacity, View } from "react-native";
 export default function SettingsScreen() {
   const router = useRouter();
   const [username, setUsername] = useState<string>();
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [modalType, setModalType] = useState<"export" | "delete" | null>(null);
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -20,6 +23,7 @@ export default function SettingsScreen() {
   
     fetchUserName();
   }, []);
+  
 
   const handlePortfolioRedirect = () => {
     Linking.openURL("https://samuelcg.com");
@@ -30,20 +34,32 @@ export default function SettingsScreen() {
   };
 
   const handleExportData = () => {
-    console.log("Exportar datos a archivo");
+    setModalType("export");
+    setShowConfirm(true);
   };
 
   const handleDeleteData = async () => {
-    try{
-      const task = await clearDatabase();
-      router.replace("/(auth)/login");
-
-    } catch (err) {
-      console.error("Error al eliminar datos:", err);
-    }
+    setModalType("delete");
+    setShowConfirm(true);
   };
 
+  const confirmAction = async () => {
+      if (modalType === "export") {
+        console.log("Exportar datos");
+      } else if (modalType === "delete") {
+        try{
+          await clearDatabase();
+          router.replace("/(auth)/login");
+
+        } catch (err) {
+          console.error("Error al eliminar datos:", err);
+        }
+      }
+      setShowConfirm(false);
+    };
+
   return (
+    <>
     <View className="flex-1 bg-ui-body px-6 pt-5 justify-between">
       <View>
         <View className="items-center mb-6">
@@ -66,7 +82,7 @@ export default function SettingsScreen() {
               color="#FE9525"
               style={{ marginRight: 10 }}
             />
-            <Text className="text-primary font-medium">Ver mis datos</Text>
+            <Text className="text-primary font-medium">Ver base de datos</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -106,5 +122,16 @@ export default function SettingsScreen() {
         <Text className="text-xs text-secondary mt-1">v1.0</Text>
       </View>
     </View>
+    <ConfirmationModal
+            visible={showConfirm}
+            title={
+              modalType === "export"
+                ? "¿Desea descargar los datos locales?"
+                : "¿Desea eliminar sus datos locales?"
+            }
+            onConfirm={confirmAction}
+            onCancel={() => setShowConfirm(false)}
+          />
+    </>
   );
 }
