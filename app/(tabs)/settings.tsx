@@ -1,13 +1,32 @@
+import { clearDatabase, getUserName } from "@/utils/database";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import { Image, Linking, Text, TouchableOpacity, View } from "react-native";
 
 export default function SettingsScreen() {
-  const handleGitHubRedirect = () => {
+  const router = useRouter();
+  const [username, setUsername] = useState<string>();
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const data = await getUserName();
+        setUsername(data?.name ?? "User");
+      } catch (err) {
+        console.error("Error al obtener los datos del usuario:", err);
+      }
+    };
+  
+    fetchUserName();
+  }, []);
+
+  const handlePortfolioRedirect = () => {
     Linking.openURL("https://samuelcg.com");
   };
 
   const handleViewData = () => {
-    console.log("Ver mis datos");
+    router.push("/(debug)/view-db");
   };
 
   const handleImportData = () => {
@@ -16,6 +35,17 @@ export default function SettingsScreen() {
 
   const handleExportData = () => {
     console.log("Exportar datos a archivo");
+  };
+
+  const handleDeleteData = async () => {
+    try{
+      const task = await clearDatabase();
+      console.log("Datos borrados: ", task);
+      router.replace("/(auth)/login");
+
+    } catch (err) {
+      console.error("Error al eliminar datos:", err);
+    }
   };
 
   return (
@@ -27,7 +57,7 @@ export default function SettingsScreen() {
             className="w-24 h-24 mb-3"
             resizeMode="cover"
           />
-          <Text className="text-xl font-bold text-primary">SCrbnll</Text>
+          <Text className="text-xl font-bold text-primary">{username}</Text>
         </View>
 
         <View className="space-y-3 mb-6 gap-3">
@@ -69,11 +99,23 @@ export default function SettingsScreen() {
             />
             <Text className="text-white font-medium">Descargar datos</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            className="flex-row bg-red-600 rounded-xl py-4 px-5 items-center justify-center"
+            onPress={handleDeleteData}
+          >
+            <Ionicons
+              name="trash-outline"
+              size={20}
+              color="#fff"
+              style={{ marginRight: 10 }}
+            />
+            <Text className="text-white font-medium">Borrar datos</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
       <View className="items-center pb-6 justify-center">
-        <TouchableOpacity onPress={handleGitHubRedirect} className="items-center">
+        <TouchableOpacity onPress={handlePortfolioRedirect} className="items-center">
           <Text className="text-sm text-primary">App creada por</Text>
           <Text className="text-base font-bold text-success underline">
             Samuel Carbonell

@@ -8,7 +8,6 @@ export const VEHICLES = [
     color: "Blue",
     km_total: "0",
     engine: "250cc",
-    owner: "Me / Other",
     plate: "0000XXX",
     technical_sheet: "https://www.github.com/SCrbnll",
     additional_info: "Aditional Info\nAditional Info 2\nAditional Info 3"
@@ -22,7 +21,6 @@ export const VEHICLES = [
     color: "Blue",
     km_total: "0",
     engine: "2.0",
-    owner: "Me / Other",
     plate: "0000XXX",
     technical_sheet: "https://www.github.com/SCrbnll",
     additional_info: "Aditional Info\nAditional Info 2\nAditional Info 3"

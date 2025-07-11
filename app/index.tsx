@@ -1,9 +1,23 @@
+import { checkUserTableExists } from "@/utils/database";
 import { Redirect } from "expo-router";
-import '../global.css';
+import { useEffect, useState } from "react";
+import "../global.css";
 
 export default function Index() {
-  // ⚠️ Simula si el usuario está logueado o no
-  const isLoggedIn = false;
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const exists = await checkUserTableExists();
+      setIsLoggedIn(exists);
+      setIsLoading(false);
+    };
+
+    checkLogin();
+  }, []);
+
+  if (isLoading) return null;
 
   if (isLoggedIn) {
     return <Redirect href="/(tabs)/home" />;

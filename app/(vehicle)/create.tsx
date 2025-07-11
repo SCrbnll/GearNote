@@ -1,46 +1,30 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { Stack, useRouter } from "expo-router";
+import { useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 import AlertModal from "@/components/AlertModal";
-import { VEHICLES } from "@/constants/vehicles";
-
-type Vehicle = {
-  id?: string;
-  name: string;
-  brand: string;
-  model: string;
-  year: string;
-  color: string;
-  km_total: string;
-  engine: string;
-  owner: string;
-  plate: string;
-  technical_sheet: string;
-  additional_info: string;
-};
+import { Vehicle } from "@/types/type-db";
+import { insertVehicle } from "@/utils/database";
 
 export default function EditVehicleScreen() {
-  const { id } = useLocalSearchParams();
   const router = useRouter();
 
   const [vehicleData, setVehicleData] = useState<Vehicle>({
     name: "",
     brand: "",
     model: "",
-    year: "",
+    year: 0,
     color: "",
-    km_total: "",
+    km_total: 0,
     engine: "",
-    owner: "",
     plate: "",
     technical_sheet: "",
     additional_info: "",
@@ -49,23 +33,15 @@ export default function EditVehicleScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  useEffect(() => {
-    if (id) {
-      const vehicle = VEHICLES.find((v) => v.id === String(id));
-      if (vehicle) {
-        setVehicleData(vehicle);
-      } else {
-        setModalMessage("Vehículo no encontrado.");
-        setModalVisible(true);
-      }
-    }
-  }, [id]);
-
   const updateField = (field: keyof Vehicle, value: string) => {
-    setVehicleData((prev) => ({ ...prev, [field]: value }));
+    setVehicleData((prev) => ({
+      ...prev,
+      [field]:
+        field === "year" || field === "km_total" ? Number(value) || 0 : value,
+    }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const requiredFields: (keyof Vehicle)[] = [
       "name",
       "brand",
@@ -73,24 +49,31 @@ export default function EditVehicleScreen() {
       "year",
       "km_total",
       "engine",
-      "owner",
       "plate",
     ];
 
     const missing = requiredFields.filter(
-      (field) => !vehicleData[field]?.trim()
+      (field) =>
+        vehicleData[field] === "" ||
+        vehicleData[field] === 0 ||
+        vehicleData[field] === null
     );
 
     if (missing.length > 0) {
-      setModalMessage(
-        `Faltan campos obligatorios: ${missing.join(", ")}`
-      );
+      setModalMessage(`Faltan campos obligatorios: ${missing.join(", ")}`);
       setModalVisible(true);
       return;
     }
 
-    console.log(id ? "Vehículo actualizado:" : "Vehículo creado:", vehicleData);
-    router.back();
+    try {
+      await insertVehicle(vehicleData);
+      console.log("Vehículo creado:", vehicleData);
+      router.back();
+    } catch (err) {
+      console.error("Error al guardar vehículo:", err);
+      setModalMessage("Ocurrió un error al guardar el vehículo.");
+      setModalVisible(true);
+    }
   };
 
   const fields: {
@@ -109,7 +92,6 @@ export default function EditVehicleScreen() {
       keyboardType: "numeric",
     },
     { label: "Motor *", field: "engine" },
-    { label: "Propietario *", field: "owner" },
     { label: "Matrícula *", field: "plate" },
     {
       label: "Ficha técnica (URL)",
@@ -122,7 +104,7 @@ export default function EditVehicleScreen() {
     <>
       <Stack.Screen
         options={{
-          title: id ? "Editar vehículo" : "Nuevo vehículo",
+          title: "Nuevo vehículo",
           headerShown: true,
           headerStyle: { backgroundColor: "#1A3A66" },
           headerTintColor: "#FE9525",
@@ -140,7 +122,7 @@ export default function EditVehicleScreen() {
               <TextInput
                 className="bg-ui-header rounded-xl px-4 py-3 text-white"
                 keyboardType={keyboardType}
-                value={vehicleData[field]}
+                value={String(vehicleData[field] ?? "")}
                 onChangeText={(text) => updateField(field, text)}
               />
             </View>
@@ -164,7 +146,7 @@ export default function EditVehicleScreen() {
             onPress={handleSave}
           >
             <Text className="text-white font-bold text-base">
-              {id ? "Guardar cambios" : "Crear vehículo"}
+              Crear vehículo
             </Text>
           </TouchableOpacity>
         </ScrollView>
