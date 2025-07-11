@@ -34,7 +34,6 @@ export default function EditVehicleScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  // Cargar datos desde la DB
   useEffect(() => {
     const fetchVehicle = async () => {
       try {
@@ -89,7 +88,6 @@ export default function EditVehicleScreen() {
 
     try {
       await updateVehicle(vehicleData);
-      console.log("Vehículo actualizado:", vehicleData);
       router.back();
     } catch (error) {
       console.error("Error al actualizar vehículo:", error);

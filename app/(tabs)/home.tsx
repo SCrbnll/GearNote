@@ -1,4 +1,5 @@
 import VehicleCard from "@/components/VehicleCard";
+import { Vehicle } from "@/types/type-db";
 import { getAllVehicles } from "@/utils/database";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useFocusEffect } from "expo-router";
@@ -7,7 +8,7 @@ import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 
 export default function HomeScreen() {
-  const [vehicles, setVehicles] = useState<any[]>([]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
 
   useFocusEffect(
     useCallback(() => {

@@ -6,34 +6,34 @@ const db = SQLite.openDatabaseSync("gearnote.db");
 // 🟢 Inicialización de la BD
 export async function initDatabase() {
   await db.execAsync(`
-    CREATE TABLE IF NOT EXISTS user (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL
-    );
+      CREATE TABLE IF NOT EXISTS user (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL
+      );
 
-    CREATE TABLE IF NOT EXISTS vehicles (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT,
-      brand TEXT,
-      model TEXT,
-      year INTEGER,
-      color TEXT,
-      km_total INTEGER,
-      engine TEXT,
-      plate TEXT,
-      technical_sheet TEXT,
-      additional_info TEXT
-    );
+      CREATE TABLE IF NOT EXISTS vehicles (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        brand TEXT,
+        model TEXT,
+        year INTEGER,
+        color TEXT,
+        km_total INTEGER,
+        engine TEXT,
+        plate TEXT,
+        technical_sheet TEXT,
+        additional_info TEXT
+      );
 
-    CREATE TABLE IF NOT EXISTS maintenances (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      title TEXT,
-      description TEXT,
-      date TEXT,
-      vehicle_id INTEGER,
-      FOREIGN KEY(vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
-    );
-  `);
+      CREATE TABLE IF NOT EXISTS maintenances (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        description TEXT,
+        date TEXT,
+        vehicle_id INTEGER,
+        FOREIGN KEY(vehicle_id) REFERENCES vehicles(id) ON DELETE CASCADE
+      );
+    `);
 }
 
 // 🟢 Insertar datos
@@ -50,13 +50,13 @@ export async function insertUser(name: string) {
 
 export async function insertVehicle(vehicle: Vehicle) {
   const statement = await db.prepareAsync(`
-    INSERT INTO vehicles (
-      name, brand, model, year, color, km_total, engine, plate, technical_sheet, additional_info
-    ) VALUES (
-      $name, $brand, $model, $year, $color, $km_total, $engine, $plate, $technical_sheet, $additional_info
-    )
-  `);
-  
+      INSERT INTO vehicles (
+        name, brand, model, year, color, km_total, engine, plate, technical_sheet, additional_info
+      ) VALUES (
+        $name, $brand, $model, $year, $color, $km_total, $engine, $plate, $technical_sheet, $additional_info
+      )
+    `);
+
   try {
     await statement.executeAsync({
       $name: vehicle.name,
@@ -68,7 +68,7 @@ export async function insertVehicle(vehicle: Vehicle) {
       $engine: vehicle.engine,
       $plate: vehicle.plate,
       $technical_sheet: vehicle.technical_sheet ?? null,
-      $additional_info: vehicle.additional_info ?? null
+      $additional_info: vehicle.additional_info ?? null,
     });
   } finally {
     await statement.finalizeAsync();
@@ -77,17 +77,17 @@ export async function insertVehicle(vehicle: Vehicle) {
 
 export async function insertMaintenance(maintenance: Maintenance) {
   const statement = await db.prepareAsync(`
-    INSERT INTO maintenances (
-      title, description, date, vehicle_id
-    ) VALUES (
-      $title, $description, $date, $vehicle_id
-    )`);
+      INSERT INTO maintenances (
+        title, description, date, vehicle_id
+      ) VALUES (
+        $title, $description, $date, $vehicle_id
+      )`);
   try {
     await statement.executeAsync({
       $title: maintenance.title,
       $description: maintenance.description ?? null,
       $date: maintenance.date,
-      $vehicle_id: maintenance.vehicle_id
+      $vehicle_id: maintenance.vehicle_id,
     });
   } finally {
     await statement.finalizeAsync();
@@ -97,19 +97,19 @@ export async function insertMaintenance(maintenance: Maintenance) {
 // 🟡 Modificar datos
 export async function updateVehicle(vehicle: Vehicle) {
   const statement = await db.prepareAsync(`
-    UPDATE vehicles SET
-      name = $name,
-      brand = $brand,
-      model = $model,
-      year = $year,
-      color = $color,
-      km_total = $km_total,
-      engine = $engine,
-      plate = $plate,
-      technical_sheet = $technical_sheet,
-      additional_info = $additional_info
-    WHERE id = $id
-  `);
+      UPDATE vehicles SET
+        name = $name,
+        brand = $brand,
+        model = $model,
+        year = $year,
+        color = $color,
+        km_total = $km_total,
+        engine = $engine,
+        plate = $plate,
+        technical_sheet = $technical_sheet,
+        additional_info = $additional_info
+      WHERE id = $id
+    `);
   try {
     await statement.executeAsync({
       $id: vehicle.id ?? null,
@@ -122,7 +122,7 @@ export async function updateVehicle(vehicle: Vehicle) {
       $engine: vehicle.engine,
       $plate: vehicle.plate,
       $technical_sheet: vehicle.technical_sheet ?? null,
-      $additional_info: vehicle.additional_info ?? null
+      $additional_info: vehicle.additional_info ?? null,
     });
   } finally {
     await statement.finalizeAsync();
@@ -131,14 +131,14 @@ export async function updateVehicle(vehicle: Vehicle) {
 
 export async function updateVehicleNotes(vehicleId: number, notes: string) {
   const statement = await db.prepareAsync(`
-    UPDATE vehicles SET
-      additional_info = $notes
-    WHERE id = $id
-  `);
+      UPDATE vehicles SET
+        additional_info = $notes
+      WHERE id = $id
+    `);
   try {
     await statement.executeAsync({
       $id: vehicleId,
-      $notes: notes
+      $notes: notes,
     });
   } finally {
     await statement.finalizeAsync();
@@ -147,20 +147,20 @@ export async function updateVehicleNotes(vehicleId: number, notes: string) {
 
 export async function updateMaintenance(maintenance: Maintenance) {
   const statement = await db.prepareAsync(`
-    UPDATE maintenances SET
-      title = $title,
-      description = $description,
-      date = $date,
-      vehicle_id = $vehicle_id
-    WHERE id = $id
-  `);
+      UPDATE maintenances SET
+        title = $title,
+        description = $description,
+        date = $date,
+        vehicle_id = $vehicle_id
+      WHERE id = $id
+    `);
   try {
     await statement.executeAsync({
       $id: maintenance.id ?? null,
       $title: maintenance.title,
       $description: maintenance.description ?? null,
       $date: maintenance.date,
-      $vehicle_id: maintenance.vehicle_id
+      $vehicle_id: maintenance.vehicle_id,
     });
   } finally {
     await statement.finalizeAsync();
@@ -177,42 +177,44 @@ export async function getAllVehicles(): Promise<Vehicle[]> {
   return result as Vehicle[];
 }
 
-export async function getAllMaintenances() {
+export async function getAllMaintenances(): Promise<Maintenance[]> {
   const result = await db.getAllAsync("SELECT * FROM maintenances");
-  return result;
+  return result as Maintenance[];
 }
 
-export async function getVehicleById(id: number) : Promise<Vehicle | null> {
+export async function getVehicleById(id: number): Promise<Vehicle | null> {
   const statement = await db.prepareAsync(`
-    SELECT * FROM vehicles WHERE id = $id
-  `);
+      SELECT * FROM vehicles WHERE id = $id
+    `);
   try {
     const result = await statement.executeAsync({ $id: id });
-    return await result.getFirstAsync() as Vehicle | null;
+    return (await result.getFirstAsync()) as Vehicle | null;
   } finally {
     await statement.finalizeAsync();
   }
 }
 
-export async function getMaintenancesByVehicleId(vehicleId: number) {
+export async function getMaintenancesByVehicleId(
+  vehicleId: number
+): Promise<Maintenance[]> {
   const statement = await db.prepareAsync(`
-    SELECT * FROM maintenances WHERE vehicle_id = $vehicle_id
-  `);
+      SELECT * FROM maintenances WHERE vehicle_id = $vehicle_id
+    `);
   try {
     const result = await statement.executeAsync({ $vehicle_id: vehicleId });
-    return await result.getAllAsync();
+    return (await result.getAllAsync()) as Maintenance[];
   } finally {
     await statement.finalizeAsync();
   }
 }
 
-export async function getMaintenanceById(id: number) {
+export async function getMaintenanceById(id: number): Promise<Maintenance> {
   const statement = await db.prepareAsync(`
-    SELECT * FROM maintenances WHERE id = $id
-  `);
+      SELECT * FROM maintenances WHERE id = $id
+    `);
   try {
     const result = await statement.executeAsync({ $id: id });
-    return await result.getFirstAsync();
+    return (await result.getFirstAsync()) as Maintenance;
   } finally {
     await statement.finalizeAsync();
   }
@@ -220,20 +222,40 @@ export async function getMaintenanceById(id: number) {
 
 // 🔴 Eliminar datos
 export async function deleteVehicleById(id: number) {
-  await db.execAsync(`DELETE FROM vehicles WHERE id = ${id}`);
+  const statement = await db.prepareAsync(
+    "DELETE FROM vehicles WHERE id = $id"
+  );
+  try {
+    await statement.executeAsync({ $id: id });
+  } finally {
+    await statement.finalizeAsync();
+  }
 }
 
 export async function deleteMaintenanceById(id: number) {
   await db.execAsync(`DELETE FROM maintenances WHERE id = ${id}`);
 }
 
+export async function deleteVehicleAndMaintenancesById(id: number) {
+  try {
+    const maintenances = await getMaintenancesByVehicleId(id);
+    for (const maintenance of maintenances) {
+      await deleteMaintenanceById(maintenance.id!);
+    }
+    await deleteVehicleById(id);
+  } catch (error) {
+    console.error("❌ Error al eliminar vehículo y mantenimientos:", error);
+  }
+}
+
+
 export async function clearDatabase() {
   try {
     await db.execAsync(`
-      DELETE FROM maintenances;
-      DELETE FROM vehicles;
-      DELETE FROM user;
-    `);
+        DELETE FROM maintenances;
+        DELETE FROM vehicles;
+        DELETE FROM user;
+      `);
   } catch (error) {
     console.error("Error al limpiar la base de datos:", error);
   }
@@ -245,6 +267,11 @@ export async function checkUserTableExists(): Promise<boolean> {
     SELECT name FROM sqlite_master WHERE type='table' AND name='user'
   `);
   return !!result;
+}
+
+export async function hasAnyUser(): Promise<boolean> {
+  const result = await db.getFirstAsync(`SELECT COUNT(*) as count FROM user`);
+  return (result as any)?.count > 0;
 }
 
 export default db;

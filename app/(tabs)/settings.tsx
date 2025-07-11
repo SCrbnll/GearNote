@@ -29,10 +29,6 @@ export default function SettingsScreen() {
     router.push("/(debug)/view-db");
   };
 
-  const handleImportData = () => {
-    console.log("Cargar datos desde archivo");
-  };
-
   const handleExportData = () => {
     console.log("Exportar datos a archivo");
   };
@@ -40,7 +36,6 @@ export default function SettingsScreen() {
   const handleDeleteData = async () => {
     try{
       const task = await clearDatabase();
-      console.log("Datos borrados: ", task);
       router.replace("/(auth)/login");
 
     } catch (err) {
@@ -72,19 +67,6 @@ export default function SettingsScreen() {
               style={{ marginRight: 10 }}
             />
             <Text className="text-primary font-medium">Ver mis datos</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="flex-row bg-green-700 rounded-xl py-4 px-5 items-center justify-center"
-            onPress={handleImportData}
-          >
-            <Ionicons
-              name="cloud-upload-outline"
-              size={20}
-              color="#fff"
-              style={{ marginRight: 10 }}
-            />
-            <Text className="text-white font-medium">Cargar datos</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

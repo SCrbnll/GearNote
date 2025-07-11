@@ -2,9 +2,8 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import HistoryItem from "@/components/HistoryItem";
 import NotesModal from "@/components/NotesModal";
 import VehicleInfoCard from "@/components/VehicleInfoCard";
-import { MAINTENANCE_HISTORY } from "@/constants/maintenance_history";
-import { Vehicle } from "@/types/type-db";
-import { deleteVehicleById, getVehicleById, updateVehicleNotes } from "@/utils/database";
+import { Maintenance, Vehicle } from "@/types/type-db";
+import { deleteVehicleAndMaintenancesById, getMaintenancesByVehicleId, getVehicleById, updateVehicleNotes } from "@/utils/database";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Link, Stack, useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
@@ -14,6 +13,7 @@ export default function VehicleInfoScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [vehicleData, setVehicleData] = useState<Vehicle>()
+  const [maintenances, setMaintenances] = useState<Maintenance[]>()
   const [showConfirm, setShowConfirm] = useState(false);
   const [modalType, setModalType] = useState<"delete" | "redirect" | null>(null);
   const [notesVisible, setNotesVisible] = useState(false);
@@ -30,8 +30,17 @@ export default function VehicleInfoScreen() {
           console.error("Error al obtener vehículo:", err);
         }
       };
+      const fetchMaintenances = async () => {
+              try {
+                const data = await getMaintenancesByVehicleId(Number(id));
+                setMaintenances(data);
+              } catch (err) {
+                console.error("Error al obtener mantenimientos:", err);
+              }
+            };
 
       fetchVehicle();
+      fetchMaintenances();
     }, [id])
   );
 
@@ -58,8 +67,7 @@ export default function VehicleInfoScreen() {
       Linking.openURL(vehicleData.technical_sheet!);
     } else if (modalType === "delete") {
       try{
-        await deleteVehicleById(vehicleData.id!);
-        console.log("Vehículo eliminado:", vehicleData);
+        await deleteVehicleAndMaintenancesById(vehicleData.id!);
         router.back()
       } catch (err) {
         console.error("Error al eliminar vehículo:", err);
@@ -130,15 +138,13 @@ export default function VehicleInfoScreen() {
             Últimos mantenimientos
           </Text>
           <FlatList
-            data={MAINTENANCE_HISTORY.filter(
-              (item) => item.vehicle_id === String(vehicleData.id)
-            )}
-            keyExtractor={(item) => item.id}
+            data={maintenances}
+            keyExtractor={(item) => String(item.id)}
             renderItem={({ item }) => <HistoryItem item={item} />}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <View className="mt-10 items-center">
-                <Ionicons name="car-outline" size={40} color="#FE9525" />
+                <Ionicons name="clipboard-outline" size={40} color="#FE9525" />
                 <Text className="text-primary text-sm mt-2 text-center">
                   No hay mantenimientos registrados
                 </Text>

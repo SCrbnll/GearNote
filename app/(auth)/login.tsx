@@ -58,8 +58,6 @@ export default function AuthScreen() {
     try{
       await initDatabase();
       await insertUser(username);
-      console.log("BD inicializada");
-      console.log("Usuario registrado:", username);
       router.replace("/(tabs)/home");
     } catch (err) {
       console.log("Error al registrar usuario:", err);

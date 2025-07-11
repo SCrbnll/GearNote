@@ -67,7 +67,6 @@ export default function EditVehicleScreen() {
 
     try {
       await insertVehicle(vehicleData);
-      console.log("Vehículo creado:", vehicleData);
       router.back();
     } catch (err) {
       console.error("Error al guardar vehículo:", err);

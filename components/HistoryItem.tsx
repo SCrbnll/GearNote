@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   item: {
-    id: string;
+    id?: number;
     title: string;
   };
   description?: string;

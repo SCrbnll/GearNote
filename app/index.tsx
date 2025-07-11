@@ -1,4 +1,4 @@
-import { checkUserTableExists } from "@/utils/database";
+import { hasAnyUser } from "@/utils/database";
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import "../global.css";
@@ -9,7 +9,8 @@ export default function Index() {
 
   useEffect(() => {
     const checkLogin = async () => {
-      const exists = await checkUserTableExists();
+      const exists = await hasAnyUser();
+      console.log("¿Tabla user existe?", exists);
       setIsLoggedIn(exists);
       setIsLoading(false);
     };

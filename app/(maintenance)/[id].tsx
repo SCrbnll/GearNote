@@ -1,22 +1,48 @@
 import ConfirmationModal from "@/components/ConfirmationModal";
-import { MAINTENANCE_HISTORY } from "@/constants/maintenance_history";
-import { VEHICLES } from "@/constants/vehicles";
+import { Maintenance, Vehicle } from "@/types/type-db";
+import {
+  deleteMaintenanceById,
+  getMaintenanceById,
+  getVehicleById,
+} from "@/utils/database";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import {
+  Link,
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+  useRouter,
+} from "expo-router";
+import { useCallback, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export default function MaintenanceDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-
-  const maintenance = MAINTENANCE_HISTORY.find((m) => m.id === id);
-  const vehicle = VEHICLES.find((v) => v.id === maintenance?.vehicle_id);
-
+  const [vehicleData, setVehicleData] = useState<Vehicle>();
+  const [maintenanceData, setMaintenanceData] = useState<Maintenance>();
   const [showConfirm, setShowConfirm] = useState(false);
   const [modalType, setModalType] = useState<"delete" | null>(null);
 
-  if (!maintenance || !vehicle) {
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const maintenance = await getMaintenanceById(Number(id));
+          setMaintenanceData(maintenance);
+
+          const vehicle = await getVehicleById(maintenance.vehicle_id);
+          setVehicleData(vehicle!);
+        } catch (err) {
+          console.error("Error al obtener los datos:", err);
+        }
+      };
+
+      fetchData();
+    }, [id])
+  );
+
+  if (!maintenanceData) {
     return (
       <View className="flex-1 bg-ui-body justify-center items-center px-6">
         <Text className="text-white">Mantenimiento no encontrado</Text>
@@ -29,12 +55,16 @@ export default function MaintenanceDetailScreen() {
     setShowConfirm(true);
   };
 
-  const confirmAction = () => {
+  const confirmAction = async () => {
     if (modalType === "delete") {
-      console.log("Mantenimiento eliminado");
+      try {
+        await deleteMaintenanceById(Number(id));
+        router.back();
+      } catch (err) {
+        console.error("Error al eliminar mantenimiento:", err);
+      }
     }
     setShowConfirm(false);
-    router.back();
   };
 
   return (
@@ -49,38 +79,46 @@ export default function MaintenanceDetailScreen() {
       />
 
       <View className="flex-1 bg-ui-body px-6 pt-5 pb-3">
-
         <Text className="text-primary font-bold text-lg mb-2">Vehículo</Text>
-        
-          <TouchableOpacity className="bg-ui-header rounded-xl p-4 mb-6 flex-row items-center justify-between" onPress={() => router.push(`/(vehicle)/${id}`)}>
-            <View className="flex-row items-center space-x-3">
-              <MaterialCommunityIcons name="car" size={24} color="#FE9525" />
-              <View className="ml-4">
-                <Text className="text-primary font-semibold">{vehicle.name}</Text>
-                <Text className="text-secondary text-sm">
-                  {vehicle.brand} {vehicle.model}
-                </Text>
-              </View>
+
+        <TouchableOpacity
+          className="bg-ui-header rounded-xl p-4 mb-6 flex-row items-center justify-between"
+          onPress={() => router.push(`/(vehicle)/${vehicleData?.id}`)}
+        >
+          <View className="flex-row items-center space-x-3">
+            <MaterialCommunityIcons name="car" size={24} color="#FE9525" />
+            <View className="ml-4">
+              <Text className="text-primary font-semibold">
+                {vehicleData?.name}
+              </Text>
+              <Text className="text-secondary text-sm">
+                {vehicleData?.brand} {vehicleData?.model}
+              </Text>
             </View>
-            <Ionicons name="chevron-forward" size={20} color="#FE9525" />
-          </TouchableOpacity>
+          </View>
+          <Ionicons name="chevron-forward" size={20} color="#FE9525" />
+        </TouchableOpacity>
 
         <Text className="text-primary font-bold text-lg mb-2">Detalles</Text>
         <View className="bg-ui-header rounded-xl p-4 mb-6">
-          <Text className="text-success text-lg font-semibold mb-1">{maintenance.title}</Text>
-          <Text className="text-white">{maintenance.description || "Sin descripción."}</Text>
+          <Text className="text-success text-lg font-semibold mb-1">
+            {maintenanceData.title}
+          </Text>
+          <Text className="text-white">
+            {maintenanceData.description || "Sin descripción."}
+          </Text>
         </View>
 
         <Text className="text-primary font-bold text-lg mb-2">Fecha</Text>
         <View className="bg-ui-header rounded-xl p-4 mb-8">
-          <Text className="text-white">{maintenance.date}</Text>
+          <Text className="text-white">{maintenanceData.date}</Text>
         </View>
 
         <View className="flex-row justify-between gap-4 mt-auto">
           <Link
             href={{
               pathname: "/edit/[id]",
-              params: { id: maintenance.id },
+              params: { id: String(maintenanceData.id) },
             }}
             asChild
           >
