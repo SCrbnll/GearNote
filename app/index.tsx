@@ -1,4 +1,4 @@
-import { hasAnyUser } from "@/utils/database";
+import { hasAnyUserWithTimeout } from "@/utils/database";
 import { Redirect } from "expo-router";
 import { useEffect, useState } from "react";
 import "../global.css";
@@ -9,7 +9,7 @@ export default function Index() {
 
   useEffect(() => {
     const checkLogin = async () => {
-      const exists = await hasAnyUser();
+      const exists = await hasAnyUserWithTimeout();
       console.log("¿Tabla user existe?", exists);
       setIsLoggedIn(exists);
       setIsLoading(false);
@@ -26,3 +26,4 @@ export default function Index() {
     return <Redirect href="/(auth)/login" />;
   }
 }
+

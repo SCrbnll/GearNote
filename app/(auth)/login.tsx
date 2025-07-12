@@ -1,6 +1,8 @@
 import AlertModal from "@/components/AlertModal";
 import { initDatabase, insertUser } from "@/utils/database";
+import { restoreDatabaseFromJSON } from "@/utils/databaseBackup";
 import * as DocumentPicker from "expo-document-picker";
+import * as FileSystem from "expo-file-system";
 import { Stack, router } from "expo-router";
 import { useState } from "react";
 import {
@@ -11,7 +13,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 export default function AuthScreen() {
@@ -28,15 +30,23 @@ export default function AuthScreen() {
       });
 
       if (!result.canceled) {
-        console.log("Archivo restaurado:", result);
+        const fileUri = result.assets[0].uri;
+        const content = await FileSystem.readAsStringAsync(fileUri);
+        const jsonData = JSON.parse(content);
+
+        await restoreDatabaseFromJSON(jsonData);
+
         setmodalTitle("Restauración exitosa");
-        setModalMessage("Bienvenid@ de nuevo.");
-        setModalVisible(true);
+        setModalMessage("Tus datos han sido recuperados.");
+      } else {
+        setmodalTitle("Cancelado");
+        setModalMessage("La restauración fue cancelada.");
       }
     } catch (err) {
-      console.log("Error al subir archivo:", err);
+      console.error("Error al restaurar:", err);
       setmodalTitle("Error");
-      setModalMessage("No se pudo cargar el archivo.");
+      setModalMessage("No se pudo restaurar el archivo.");
+    } finally {
       setModalVisible(true);
     }
   };
@@ -55,7 +65,7 @@ export default function AuthScreen() {
       setModalVisible(true);
       return;
     }
-    try{
+    try {
       await initDatabase();
       await insertUser(username);
       router.replace("/(tabs)/home");

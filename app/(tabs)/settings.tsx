@@ -1,5 +1,6 @@
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { clearDatabase, getUserName } from "@/utils/database";
+import { exportDatabaseToJSON } from "@/utils/databaseBackup";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -45,7 +46,7 @@ export default function SettingsScreen() {
 
   const confirmAction = async () => {
       if (modalType === "export") {
-        console.log("Exportar datos");
+        await exportDatabaseToJSON();
       } else if (modalType === "delete") {
         try{
           await clearDatabase();

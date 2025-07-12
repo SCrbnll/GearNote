@@ -269,9 +269,20 @@ export async function checkUserTableExists(): Promise<boolean> {
   return !!result;
 }
 
-export async function hasAnyUser(): Promise<boolean> {
-  const result = await db.getFirstAsync(`SELECT COUNT(*) as count FROM user`);
-  return (result as any)?.count > 0;
+export async function hasAnyUserWithTimeout(timeoutMs = 3000): Promise<boolean> {
+  try {
+    const result = await Promise.race([
+      db.getFirstAsync(`SELECT COUNT(*) as count FROM user`),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Timeout alcanzado")), timeoutMs)
+      )
+    ]);
+    return !!(result && (result as any).count > 0);
+  } catch (error: any) {
+    console.warn("Error comprobando usuario o timeout:", error.message);
+    return false;
+  }
 }
+
 
 export default db;
