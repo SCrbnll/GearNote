@@ -70,7 +70,7 @@ export default function AuthScreen() {
       await insertUser(username);
       router.replace("/(tabs)/home");
     } catch (err) {
-      console.log("Error al registrar usuario:", err);
+      console.error("Error al registrar usuario:", err);
       setmodalTitle("Error");
       setModalMessage("No se pudo registrar el usuario.");
       setModalVisible(true);

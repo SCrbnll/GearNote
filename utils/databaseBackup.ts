@@ -40,10 +40,8 @@ export async function exportDatabaseToJSON(): Promise<void> {
 
 export async function restoreDatabaseFromJSON(data: BackupData) {
   try {
-    console.log("Inicializando base de datos...");
     await initDatabase();
 
-    console.log("Insertando usuarios...");
     for (const user of data.users) {
       await db.runAsync(
         `INSERT INTO user (id, name) VALUES (?, ?)`,
@@ -51,7 +49,6 @@ export async function restoreDatabaseFromJSON(data: BackupData) {
       );
     }
 
-    console.log("Insertando vehículos...");
     for (const vehicle of data.vehicles) {
       await db.runAsync(
         `INSERT INTO vehicles 
@@ -73,7 +70,6 @@ export async function restoreDatabaseFromJSON(data: BackupData) {
       );
     }
 
-    console.log("Insertando mantenimientos...");
     for (const maintenance of data.maintenances) {
       await db.runAsync(
         `INSERT INTO maintenances (id, title, description, date, vehicle_id)
@@ -88,7 +84,6 @@ export async function restoreDatabaseFromJSON(data: BackupData) {
       );
     }
 
-    console.log("Restauración de datos completada.");
     return true;
   } catch (error) {
     console.error("Error al restaurar datos:", error);
