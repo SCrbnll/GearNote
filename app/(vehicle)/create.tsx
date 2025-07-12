@@ -11,9 +11,15 @@ import {
 } from "react-native";
 
 import AlertModal from "@/components/AlertModal";
+import DynamicInputField from "@/components/DinamicInputField";
 import { Vehicle } from "@/types/type-db";
 import { insertVehicle } from "@/utils/database";
-import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import {
+  FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 
 export default function EditVehicleScreen() {
   const router = useRouter();
@@ -83,15 +89,64 @@ export default function EditVehicleScreen() {
     icon?: React.ReactNode;
     keyboardType?: "default" | "numeric" | "url";
   }[] = [
-    { label: "Nombre (Mote) *", field: "name", placeholder: "Ej: Mi coche", icon: <FontAwesome5 name="id-badge" solid size={18} color="#FE9525" /> },
-    { label: "Marca *", field: "brand", placeholder: "Ej: Honda", icon: <MaterialCommunityIcons name="tools" size={18} color="#FE9525" /> },
-    { label: "Modelo *", field: "model", placeholder: "Ej: Civic", icon: <FontAwesome5 name="car" solid size={18} color="#FE9525" /> },
-    { label: "Año *", field: "year", keyboardType: "numeric", icon: <Ionicons name="calendar" solid size={18} color="#FE9525" /> },
-    { label: "Color", field: "color", placeholder: "Ej: Negro", icon: <Ionicons name="color-palette" solid size={18} color="#FE9525" /> },
-    { label: "Kilómetros totales *", field: "km_total", placeholder: "0", icon: <MaterialIcons name="speed" solid size={18} color="#FE9525" />, keyboardType: "numeric" },
-    { label: "Motor *", field: "engine", placeholder: "Ej: 1.6", icon: <FontAwesome5 name="oil-can" solid size={18} color="#FE9525" /> },
-    { label: "Matrícula *", field: "plate", placeholder: "Ej: 1234ABC", icon: <FontAwesome5 name="tag" solid size={18} color="#FE9525" /> },
-    { label: "Ficha técnica (URL)", field: "technical_sheet", placeholder: "Ej: https://example.com/ficha_tecnica.pdf", icon: <MaterialIcons name="description" solid size={18} color="#FE9525" />, keyboardType: "url" },
+    {
+      label: "Nombre (Mote) *",
+      field: "name",
+      placeholder: "Ej: Mi coche",
+      icon: <FontAwesome5 name="id-badge" solid size={18} color="#FE9525" />,
+    },
+    {
+      label: "Marca *",
+      field: "brand",
+      placeholder: "Ej: Honda",
+      icon: <MaterialCommunityIcons name="tools" size={18} color="#FE9525" />,
+    },
+    {
+      label: "Modelo *",
+      field: "model",
+      placeholder: "Ej: Civic",
+      icon: <FontAwesome5 name="car" solid size={18} color="#FE9525" />,
+    },
+    {
+      label: "Año *",
+      field: "year",
+      keyboardType: "numeric",
+      icon: <Ionicons name="calendar" solid size={18} color="#FE9525" />,
+    },
+    {
+      label: "Color",
+      field: "color",
+      placeholder: "Ej: Negro",
+      icon: <Ionicons name="color-palette" solid size={18} color="#FE9525" />,
+    },
+    {
+      label: "Kilómetros totales *",
+      field: "km_total",
+      placeholder: "0",
+      icon: <MaterialIcons name="speed" solid size={18} color="#FE9525" />,
+      keyboardType: "numeric",
+    },
+    {
+      label: "Motor *",
+      field: "engine",
+      placeholder: "Ej: 1.6",
+      icon: <FontAwesome5 name="oil-can" solid size={18} color="#FE9525" />,
+    },
+    {
+      label: "Matrícula *",
+      field: "plate",
+      placeholder: "Ej: 1234ABC",
+      icon: <FontAwesome5 name="tag" solid size={18} color="#FE9525" />,
+    },
+    {
+      label: "Ficha técnica (URL)",
+      field: "technical_sheet",
+      placeholder: "Ej: https://example.com/ficha_tecnica.pdf",
+      icon: (
+        <MaterialIcons name="description" solid size={18} color="#FE9525" />
+      ),
+      keyboardType: "url",
+    },
   ];
 
   return (
@@ -110,28 +165,25 @@ export default function EditVehicleScreen() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView className="flex-1 px-6 pt-4">
-          {fields.map(({ label, field, keyboardType }) => (
-            <View key={field} className="mb-4">
-              <View className="flex-row gap-2">
-                {fields.find((f) => f.field === field)?.icon}
-                <Text className="text-primary font-semibold mb-1">{label}</Text>
-              </View>
-              <TextInput
-                className="bg-ui-header rounded-xl px-4 py-3 text-white"
-                keyboardType={keyboardType}
-                placeholder={fields.find((f) => f.field === field)?.placeholder}
-                placeholderTextColor={"#bbb"}
-                value={String(vehicleData[field] ?? "")}
-                onChangeText={(text) => updateField(field, text)}
-              />
-            </View>
+          {fields.map(({ label, field, placeholder, icon, keyboardType }) => (
+            <DynamicInputField
+              key={field}
+              label={label}
+              placeholder={placeholder}
+              icon={icon}
+              keyboardType={keyboardType}
+              value={String(vehicleData[field] ?? "")}
+              onChange={(text) => updateField(field, text)}
+            />
           ))}
 
           <View className="mb-6">
             <View className="flex-row gap-2">
-                <Ionicons name="document-sharp" size={18} color="#FE9525" />
-                <Text className="text-primary font-semibold mb-1">Información adicional</Text>
-              </View>
+              <Ionicons name="document-sharp" size={18} color="#FE9525" />
+              <Text className="text-primary font-semibold mb-1">
+                Información adicional
+              </Text>
+            </View>
             <TextInput
               className="bg-ui-header rounded-xl px-4 py-3 text-white h-32 text-start"
               multiline
