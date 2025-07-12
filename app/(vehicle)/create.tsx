@@ -13,6 +13,7 @@ import {
 import AlertModal from "@/components/AlertModal";
 import { Vehicle } from "@/types/type-db";
 import { insertVehicle } from "@/utils/database";
+import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 
 export default function EditVehicleScreen() {
   const router = useRouter();
@@ -78,25 +79,19 @@ export default function EditVehicleScreen() {
   const fields: {
     label: string;
     field: keyof Vehicle;
+    placeholder?: string;
+    icon?: React.ReactNode;
     keyboardType?: "default" | "numeric" | "url";
   }[] = [
-    { label: "Nombre *", field: "name" },
-    { label: "Marca *", field: "brand" },
-    { label: "Modelo *", field: "model" },
-    { label: "Año *", field: "year", keyboardType: "numeric" },
-    { label: "Color", field: "color" },
-    {
-      label: "Kilómetros totales *",
-      field: "km_total",
-      keyboardType: "numeric",
-    },
-    { label: "Motor *", field: "engine" },
-    { label: "Matrícula *", field: "plate" },
-    {
-      label: "Ficha técnica (URL)",
-      field: "technical_sheet",
-      keyboardType: "url",
-    },
+    { label: "Nombre (Mote) *", field: "name", placeholder: "Ej: Mi coche", icon: <FontAwesome5 name="id-badge" solid size={18} color="#FE9525" /> },
+    { label: "Marca *", field: "brand", placeholder: "Ej: Honda", icon: <MaterialCommunityIcons name="tools" size={18} color="#FE9525" /> },
+    { label: "Modelo *", field: "model", placeholder: "Ej: Civic", icon: <FontAwesome5 name="car" solid size={18} color="#FE9525" /> },
+    { label: "Año *", field: "year", keyboardType: "numeric", icon: <Ionicons name="calendar" solid size={18} color="#FE9525" /> },
+    { label: "Color", field: "color", placeholder: "Ej: Negro", icon: <Ionicons name="color-palette" solid size={18} color="#FE9525" /> },
+    { label: "Kilómetros totales *", field: "km_total", placeholder: "0", icon: <MaterialIcons name="speed" solid size={18} color="#FE9525" />, keyboardType: "numeric" },
+    { label: "Motor *", field: "engine", placeholder: "Ej: 1.6", icon: <FontAwesome5 name="oil-can" solid size={18} color="#FE9525" /> },
+    { label: "Matrícula *", field: "plate", placeholder: "Ej: 1234ABC", icon: <FontAwesome5 name="tag" solid size={18} color="#FE9525" /> },
+    { label: "Ficha técnica (URL)", field: "technical_sheet", placeholder: "Ej: https://example.com/ficha_tecnica.pdf", icon: <MaterialIcons name="description" solid size={18} color="#FE9525" />, keyboardType: "url" },
   ];
 
   return (
@@ -117,10 +112,15 @@ export default function EditVehicleScreen() {
         <ScrollView className="flex-1 px-6 pt-4">
           {fields.map(({ label, field, keyboardType }) => (
             <View key={field} className="mb-4">
-              <Text className="text-primary font-semibold mb-1">{label}</Text>
+              <View className="flex-row gap-2">
+                {fields.find((f) => f.field === field)?.icon}
+                <Text className="text-primary font-semibold mb-1">{label}</Text>
+              </View>
               <TextInput
                 className="bg-ui-header rounded-xl px-4 py-3 text-white"
                 keyboardType={keyboardType}
+                placeholder={fields.find((f) => f.field === field)?.placeholder}
+                placeholderTextColor={"#bbb"}
                 value={String(vehicleData[field] ?? "")}
                 onChangeText={(text) => updateField(field, text)}
               />
@@ -128,9 +128,10 @@ export default function EditVehicleScreen() {
           ))}
 
           <View className="mb-6">
-            <Text className="text-primary font-semibold mb-1">
-              Información adicional
-            </Text>
+            <View className="flex-row gap-2">
+                <Ionicons name="document-sharp" size={18} color="#FE9525" />
+                <Text className="text-primary font-semibold mb-1">Información adicional</Text>
+              </View>
             <TextInput
               className="bg-ui-header rounded-xl px-4 py-3 text-white h-32 text-start"
               multiline
@@ -141,9 +142,10 @@ export default function EditVehicleScreen() {
           </View>
 
           <TouchableOpacity
-            className="bg-green-700 rounded-xl py-4 items-center mb-10"
+            className="bg-green-700 rounded-xl py-4 items-center justify-center mb-10 flex-row gap-2"
             onPress={handleSave}
           >
+            <Ionicons name="checkmark-circle-outline" size={24} color="white" />
             <Text className="text-white font-bold text-base">
               Crear vehículo
             </Text>

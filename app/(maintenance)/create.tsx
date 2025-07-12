@@ -1,4 +1,8 @@
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  FontAwesome5,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { Stack, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -6,12 +10,12 @@ import {
   Platform,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 
 import AlertModal from "@/components/AlertModal";
+import DynamicInputField from "@/components/DinamicInputField";
 import DropdownModal from "@/components/DropdownModal";
 import { Maintenance, Vehicle } from "@/types/type-db";
 import { getAllVehicles, insertMaintenance } from "@/utils/database";
@@ -85,6 +89,38 @@ export default function EditMaintenanceScreen() {
     })),
   ];
 
+  const fields: {
+    label: string;
+    field: keyof Maintenance;
+    placeholder?: string;
+    icon?: React.ReactNode;
+    keyboardType?: "default" | "numeric" | "url";
+    multiline?: boolean;
+    numberOfLines?: number;
+  }[] = [
+    {
+      label: "Fecha *",
+      field: "date",
+      placeholder: "YYYY-MM-DD",
+      keyboardType: "numeric",
+      icon: <Ionicons name="calendar" size={18} color="#FE9525" />,
+    },
+    {
+      label: "Título *",
+      field: "title",
+      placeholder: "Ej: Cambio de aceite",
+      icon: <MaterialCommunityIcons name="tools" size={18} color="#FE9525" />,
+    },
+    {
+      label: "Descripción",
+      field: "description",
+      placeholder: "Describe el mantenimiento...",
+      multiline: true,
+      numberOfLines: 6,
+      icon: <Ionicons name="document-text" size={18} color="#FE9525" />,
+    },
+  ];
+
   return (
     <>
       <Stack.Screen
@@ -101,9 +137,12 @@ export default function EditMaintenanceScreen() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView className="flex-1 px-6 pt-4">
-          <Text className="text-primary font-bold text-lg mb-2">
-            Vehículo *
-          </Text>
+          <View className="flex-row items-center gap-2 mb-1">
+            <FontAwesome5 name="car" solid size={18} color="#FE9525" />
+            <Text className="text-primary font-bold text-lg">
+              Vehículo *
+            </Text>
+          </View>
           <TouchableOpacity
             onPress={() => setShowVehicleModal(true)}
             className="bg-ui-header rounded-xl p-4 mb-6 flex-row items-center justify-between"
@@ -127,48 +166,38 @@ export default function EditMaintenanceScreen() {
           </TouchableOpacity>
 
           <View className="mb-4">
-            <Text className="text-primary font-semibold mb-1">Fecha *</Text>
-            <TextInput
-              className="bg-ui-header rounded-xl px-4 py-3 text-white"
-              value={maintenanceData.date}
-              onChangeText={(text) => updateField("date", text)}
-              placeholder="YYYY-MM-DD"
-              placeholderTextColor="#ccc"
-              keyboardType="numeric"
-            />
-          </View>
-
-          <View className="mb-4">
-            <Text className="text-primary font-semibold mb-1">Título *</Text>
-            <TextInput
-              className="bg-ui-header rounded-xl px-4 py-3 text-white"
-              value={maintenanceData.title}
-              onChangeText={(text) => updateField("title", text)}
-              placeholder="Ej: Cambio de aceite"
-              placeholderTextColor="#ccc"
-            />
-          </View>
-
-          <View className="mb-6">
-            <Text className="text-primary font-semibold mb-1">Descripción</Text>
-            <TextInput
-              value={maintenanceData.description}
-              onChangeText={(text) => updateField("description", text)}
-              placeholder="Escribe una descripción..."
-              placeholderTextColor="#ccc"
-              multiline
-              numberOfLines={6}
-              className="bg-ui-header text-white rounded-xl p-3 min-h-[150px] text-left"
-              textAlignVertical="top"
-            />
+            {fields.map(
+              ({
+                label,
+                field,
+                placeholder,
+                icon,
+                keyboardType,
+                multiline,
+                numberOfLines,
+              }) => (
+                <DynamicInputField
+                  key={field}
+                  label={label}
+                  placeholder={placeholder}
+                  icon={icon}
+                  value={String(maintenanceData[field] ?? "")}
+                  onChange={(text) => updateField(field, text)}
+                  keyboardType={keyboardType}
+                  multiline={multiline}
+                  numberOfLines={numberOfLines}
+                />
+              )
+            )}
           </View>
 
           <TouchableOpacity
-            className="bg-green-700 rounded-xl py-4 items-center mb-10"
+            className="bg-green-700 rounded-xl py-4 items-center justify-center mb-10 flex-row gap-2"
             onPress={handleSave}
           >
+            <Ionicons name="checkmark-circle-outline" size={24} color="white" />
             <Text className="text-white font-bold text-base">
-              Crear mantenimiento
+              Crear matenimiento
             </Text>
           </TouchableOpacity>
         </ScrollView>
