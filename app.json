@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/gearnote-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": false
+      "edgeToEdgeEnabled": false,
+      "package": "com.scrbnll.gearnote"
     },
     "androidNavigationBar": {
       "visible": true,
@@ -42,6 +43,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c74089f5-ec5a-4c13-b35b-fae696bd4ee1"
+      }
     }
   }
 }

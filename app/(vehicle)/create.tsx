@@ -111,7 +111,7 @@ export default function EditVehicleScreen() {
       />
 
       <KeyboardAvoidingView
-        className="flex-1"
+        className="flex-1 pt-5 pb-3"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView className="flex-1 px-6 pt-4">
