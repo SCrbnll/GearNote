@@ -10,8 +10,8 @@ import {
   View,
 } from "react-native";
 
-import AlertModal from "@/components/AlertModal";
 import DynamicInputField from "@/components/DinamicInputField";
+import AlertModal from "@/components/Modals/AlertModal";
 import { Vehicle } from "@/types/type-db";
 import { insertVehicle } from "@/utils/database";
 import {

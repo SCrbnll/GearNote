@@ -1,6 +1,6 @@
-import ConfirmationModal from "@/components/ConfirmationModal";
 import HistoryItem from "@/components/HistoryItem";
-import NotesModal from "@/components/NotesModal";
+import ConfirmationModal from "@/components/Modals/ConfirmationModal";
+import NotesModal from "@/components/Modals/NotesModal";
 import VehicleInfoCard from "@/components/VehicleInfoCard";
 import { Maintenance, Vehicle } from "@/types/type-db";
 import { deleteVehicleAndMaintenancesById, getMaintenancesByVehicleId, getVehicleById, updateVehicleNotes } from "@/utils/database";

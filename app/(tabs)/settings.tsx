@@ -1,4 +1,5 @@
-import ConfirmationModal from "@/components/ConfirmationModal";
+import AppHeader from "@/components/Header/AppHeader";
+import ConfirmationModal from "@/components/Modals/ConfirmationModal";
 import { clearDatabase, getUserName } from "@/utils/database";
 import { exportDatabaseToJSON } from "@/utils/databaseBackup";
 import { Ionicons } from "@expo/vector-icons";
@@ -61,8 +62,13 @@ export default function SettingsScreen() {
 
   return (
     <>
-    <View className="flex-1 bg-ui-body px-6 pt-5 justify-between">
-      <View>
+    <View className="flex-1 bg-ui-body">
+      <AppHeader
+              type="backOptions"
+              title="Ajustes"
+              onBack={() => router.back()}
+            />
+      <View className="p-5">
         <View className="items-center mb-6">
           <Image
             source={require("./../../assets/images/user_pfp.png")}

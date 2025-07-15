@@ -11,8 +11,8 @@ import {
   View,
 } from "react-native";
 
-import AlertModal from "@/components/AlertModal";
-import DropdownModal from "@/components/DropdownModal";
+import AlertModal from "@/components/Modals/AlertModal";
+import DropdownModal from "@/components/Modals/DropdownModal";
 import { Maintenance, Vehicle } from "@/types/type-db";
 import {
   getAllVehicles,

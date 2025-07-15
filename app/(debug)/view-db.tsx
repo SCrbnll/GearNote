@@ -1,4 +1,4 @@
-import CustomModal from "@/components/CustomModal";
+import CustomModal from "@/components/Modals/CustomModal";
 import db from "@/utils/database";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";

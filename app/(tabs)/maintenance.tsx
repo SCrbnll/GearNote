@@ -1,5 +1,5 @@
-import DropdownModal from "@/components/DropdownModal";
 import HistoryItem from "@/components/HistoryItem";
+import DropdownModal from "@/components/Modals/DropdownModal";
 import { Maintenance, Vehicle } from "@/types/type-db";
 import { getAllMaintenances, getAllVehicles } from "@/utils/database";
 import { Ionicons } from "@expo/vector-icons";

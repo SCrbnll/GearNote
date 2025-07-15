@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 
-import AlertModal from "@/components/AlertModal";
+import AlertModal from "@/components/Modals/AlertModal";
 import { Vehicle } from "@/types/type-db";
 import { getVehicleById, updateVehicle } from "@/utils/database";
 

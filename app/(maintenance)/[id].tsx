@@ -1,4 +1,4 @@
-import ConfirmationModal from "@/components/ConfirmationModal";
+import ConfirmationModal from "@/components/Modals/ConfirmationModal";
 import { Maintenance, Vehicle } from "@/types/type-db";
 import {
   deleteMaintenanceById,

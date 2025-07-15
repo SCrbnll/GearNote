@@ -1,6 +1,6 @@
-import AlertModal from "@/components/AlertModal";
-import CustomButton from "@/components/CustomButton";
+import CustomButton from "@/components/Buttons/CustomButton";
 import FormInput from "@/components/FormInput";
+import AlertModal from "@/components/Modals/AlertModal";
 import { initDatabase, insertUser } from "@/utils/database";
 import { restoreDatabaseFromJSON } from "@/utils/databaseBackup";
 import { Ionicons } from "@expo/vector-icons";
