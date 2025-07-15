@@ -1,11 +1,11 @@
+import VehicleCard from "@/components/Card/VehicleCard";
 import AppHeader from "@/components/Header/AppHeader";
-import VehicleCard from "@/components/VehicleCard";
 import { Vehicle } from "@/types/type-db";
 import { getAllVehicles } from "@/utils/database";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 
 
 export default function HomeScreen() {
@@ -37,34 +37,27 @@ export default function HomeScreen() {
       />
       <View className="p-5">
           <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-primary text-lg font-bold">MIS VEHÍCULOS</Text>
+            <View className="flex-row items-center">
+              <Ionicons name="home-sharp" size={20} color="#FFFFFF" />
+              <Text className="text-white text-lg font-bold ml-3">Mi garaje</Text>
+            </View>
             <Link href="/(vehicle)/create" asChild>
-              <TouchableOpacity className="bg-primary px-3 py-1 rounded-full flex-row items-center gap-1">
-                <Ionicons name="add-circle-outline" size={20} color="black" />
-                <Text className="text-black font-semibold mr-2">Agregar</Text>
-              </TouchableOpacity>
+              <Ionicons name="add-circle" size={20} color="#FFFFFF" />
             </Link>
           </View>
+          <View className="border-b-2 border-gray mb-3"></View>
 
           <FlatList
             data={vehicles}
             keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
-            numColumns={2}
-            renderItem={({ item }) => {
-              if (item.name === "") {
-                return <View className="flex-1 m-2 min-w-[45%]" />;
-              }
-
-              return (
+            renderItem={({ item }) => (
                 <VehicleCard
                   id={item.id?.toString() ?? ""}
                   name={item.name}
                   plate={item.plate}
                 />
-              );
-            }}
-            contentContainerStyle={{ paddingBottom: 0 }}
-            showsVerticalScrollIndicator={false}
+              )
+            }
             ListEmptyComponent={
               <View className="mt-10 items-center">
                 <Ionicons name="car-outline" size={40} color="#FE9525" />
@@ -73,6 +66,7 @@ export default function HomeScreen() {
                 </Text>
               </View>
             }
+            showsVerticalScrollIndicator={false}
           />
         </View>
       </View>
