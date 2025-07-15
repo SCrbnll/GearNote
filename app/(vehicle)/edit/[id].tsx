@@ -17,6 +17,7 @@ import CustomButton from "@/components/Buttons/CustomButton";
 import AppHeader from "@/components/Header/AppHeader";
 import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
+import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
 import { DEFAULT_VEHICLE_IMAGE, INPUT_FIELDS } from "@/constants/global";
 import { Vehicle } from "@/types/type-db";
 import { getVehicleById, updateVehicle } from "@/utils/database";
@@ -29,6 +30,7 @@ export default function EditVehicleScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     const fetchVehicle = async () => {
@@ -108,7 +110,7 @@ export default function EditVehicleScreen() {
 
     try {
       await updateVehicle(vehicleData);
-      router.back();
+      setShowSuccess(true); 
     } catch (error) {
       console.error("Error al actualizar vehículo:", error);
       setModalMessage("Error al actualizar el vehículo.");
@@ -116,7 +118,7 @@ export default function EditVehicleScreen() {
     }
   };
 
-  if (loading || !vehicleData) {
+  if (loading || !vehicleData) {           
     return (
       <View className="flex-1 justify-center items-center bg-black">
         {/* TODO : Add loading animation here and check when you save */}
@@ -128,10 +130,10 @@ export default function EditVehicleScreen() {
   return (
     <>
       <AppHeader
-              type="backOptions" 
-              title="Editar vehículo"       
-              onBack={() => router.back()}
-            />
+        type="backOptions" 
+        title="Editar vehículo"       
+        onBack={() => router.back()}
+      />
 
       <KeyboardAvoidingView
         className="flex-1"
@@ -188,6 +190,16 @@ export default function EditVehicleScreen() {
         description={modalMessage}
         onCancel={() => setModalVisible(false)}
       />
+
+      {showSuccess && (
+        <SuccessOverlay
+          onFinish={() => router.back()}
+          loadingText="Aplicando cambios..."
+          successText="Vehículo editado con éxito"
+          successIcon={<Ionicons name="checkmark-circle" size={90} color="#4CAF50" />}
+          duration={3000}
+        />
+      )}
     </>
   );
 }

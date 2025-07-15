@@ -15,6 +15,7 @@ import CustomButton from "@/components/Buttons/CustomButton";
 import AppHeader from "@/components/Header/AppHeader";
 import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
+import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
 import { DEFAULT_VEHICLE_IMAGE, INPUT_FIELDS } from "@/constants/global";
 import { Vehicle } from "@/types/type-db";
 import { insertVehicle } from "@/utils/database";
@@ -38,6 +39,8 @@ export default function EditVehicleScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+
 
   const updateField = (field: keyof Vehicle, value: string) => {
     setVehicleData((prev) => ({
@@ -87,7 +90,7 @@ export default function EditVehicleScreen() {
 
     try {
       await insertVehicle(vehicleData);
-      router.back();
+      setShowSuccess(true); 
     } catch (err) {
       console.error("Error al guardar vehículo:", err);
       setModalMessage("Ocurrió un error al guardar el vehículo.");
@@ -159,6 +162,16 @@ export default function EditVehicleScreen() {
         description={modalMessage}
         onCancel={() => setModalVisible(false)}
       />
+
+      {showSuccess && (
+        <SuccessOverlay
+          onFinish={() => router.back()}
+          loadingText="Añadiendo vehículo..."
+          successText="Vehículo añadido con éxito"
+          successIcon={<Ionicons name="checkmark-circle" size={90} color="#4CAF50" />}
+          duration={3000}
+        />
+      )}
     </>
   );
 }
