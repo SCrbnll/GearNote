@@ -1,16 +1,23 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import {
+  Ionicons,
+} from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
+import CircleIconButton from "@/components/Buttons/CircleIconButton";
+import CustomButton from "@/components/Buttons/CustomButton";
+import AppHeader from "@/components/Header/AppHeader";
+import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
+import { DEFAULT_VEHICLE_IMAGE, INPUT_FIELDS } from "@/constants/global";
 import { Vehicle } from "@/types/type-db";
 import { getVehicleById, updateVehicle } from "@/utils/database";
 
@@ -18,21 +25,10 @@ export default function EditVehicleScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
 
-  const [vehicleData, setVehicleData] = useState<Vehicle>({
-    name: "",
-    brand: "",
-    model: "",
-    year: 0,
-    color: "",
-    km_total: 0,
-    engine: "",
-    plate: "",
-    technical_sheet: "",
-    additional_info: "",
-  });
-
+  const [vehicleData, setVehicleData] = useState<Vehicle | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVehicle = async () => {
@@ -48,6 +44,8 @@ export default function EditVehicleScreen() {
         console.error("Error al cargar vehículo:", error);
         setModalMessage("Error al cargar el vehículo.");
         setModalVisible(true);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -55,14 +53,36 @@ export default function EditVehicleScreen() {
   }, [id]);
 
   const updateField = (field: keyof Vehicle, value: string) => {
+    if (!vehicleData) return;
     setVehicleData((prev) => ({
-      ...prev,
+      ...prev!,
       [field]:
         field === "year" || field === "km_total" ? Number(value) || 0 : value,
     }));
   };
 
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      setModalMessage("Permiso para acceder a la galería denegado.");
+      setModalVisible(true);
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      const selectedImageUri = result.assets[0].uri;
+      setVehicleData((prev) => ({ ...prev!, image_uri: selectedImageUri }));
+    }
+  };
+
   const handleSave = async () => {
+    if (!vehicleData) return;
+
     const requiredFields: (keyof Vehicle)[] = [
       "name",
       "brand",
@@ -96,79 +116,69 @@ export default function EditVehicleScreen() {
     }
   };
 
-  const fields: {
-    label: string;
-    field: keyof Vehicle;
-    keyboardType?: "default" | "numeric" | "url";
-  }[] = [
-    { label: "Nombre *", field: "name" },
-    { label: "Marca *", field: "brand" },
-    { label: "Modelo *", field: "model" },
-    { label: "Año *", field: "year", keyboardType: "numeric" },
-    { label: "Color", field: "color" },
-    {
-      label: "Kilómetros totales *",
-      field: "km_total",
-      keyboardType: "numeric",
-    },
-    { label: "Motor *", field: "engine" },
-    { label: "Matrícula *", field: "plate" },
-    {
-      label: "Ficha técnica (URL)",
-      field: "technical_sheet",
-      keyboardType: "url",
-    },
-  ];
+  if (loading || !vehicleData) {
+    return (
+      <View className="flex-1 justify-center items-center bg-black">
+        {/* TODO : Add loading animation here and check when you save */}
+        {/* <ActivityIndicator size="large" color="#00ff00" /> */}
+      </View>
+    );
+  }
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: "Editar vehículo",
-          headerShown: true,
-          headerStyle: { backgroundColor: "#1A3A66" },
-          headerTintColor: "#FE9525",
-        }}
-      />
+      <AppHeader
+              type="backOptions" 
+              title="Editar vehículo"       
+              onBack={() => router.back()}
+            />
 
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView className="flex-1 px-6 pt-4">
-          {fields.map(({ label, field, keyboardType }) => (
-            <View key={field} className="mb-4">
-              <Text className="text-primary font-semibold mb-1">{label}</Text>
-              <TextInput
-                className="bg-ui-header rounded-xl px-4 py-3 text-white"
-                keyboardType={keyboardType}
-                value={String(vehicleData[field] ?? "")}
-                onChangeText={(text) => updateField(field, text)}
+          <View className="relative mb-6 rounded-xl overflow-hidden">
+            <Image
+              source={
+                vehicleData.image_uri
+                  ? { uri: vehicleData.image_uri }
+                  : DEFAULT_VEHICLE_IMAGE
+              }
+              className="w-full h-48 rounded-xl"
+              resizeMode="cover"
+            />
+            <View className="absolute bottom-2 left-2">
+              <CircleIconButton
+                icon={<Ionicons name="camera" size={18} color="white" />}
+                onPress={pickImage}
               />
             </View>
-          ))}
-
-          <View className="mb-6">
-            <Text className="text-primary font-semibold mb-1">
-              Información adicional
-            </Text>
-            <TextInput
-              className="bg-ui-header rounded-xl px-4 py-3 text-white h-32 text-start"
-              multiline
-              textAlignVertical="top"
-              value={vehicleData.additional_info}
-              onChangeText={(text) => updateField("additional_info", text)}
-            />
           </View>
 
-          <TouchableOpacity
-            className="bg-green-700 rounded-xl py-4 items-center mb-10"
+          {INPUT_FIELDS.map(
+            ({ label, field, placeholder, icon, keyboardType, multiline }) => (
+              <FormInput
+                key={field}
+                label={label}
+                icon={icon}
+                placeholder={placeholder}
+                keyboardType={keyboardType}
+                multiline={multiline}
+                value={String(vehicleData[field] ?? "")}
+                onChangeText={(text: string) => updateField(field, text)}
+              />
+            )
+          )}
+
+          <CustomButton
+            text="Guardar cambios"
+            type="success"
+            icon={<Ionicons name="save" size={24} color="white" />}
             onPress={handleSave}
-          >
-            <Text className="text-white font-bold text-base">
-              Guardar cambios
-            </Text>
-          </TouchableOpacity>
+          />
+
+          <View className="h-16" />
         </ScrollView>
       </KeyboardAvoidingView>
 

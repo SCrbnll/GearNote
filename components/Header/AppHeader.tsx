@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Text, TouchableOpacity, View, ViewStyle } from "react-native";
-import CircleIconButton from "../Buttons/CIrcleIconButton";
+import CircleIconButton from "../Buttons/CircleIconButton";
 
 type HeaderType =
   | "home"

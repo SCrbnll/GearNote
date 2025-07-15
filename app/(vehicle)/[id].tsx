@@ -1,19 +1,13 @@
 import CustomButton from "@/components/Buttons/CustomButton";
-import FormInput from "@/components/FormInput";
+import VehicleInfoCard from "@/components/Card/VehicleInfoCard";
 import AppHeader from "@/components/Header/AppHeader";
+import FormInput from "@/components/Inputs/FormInput";
+import { OptionsMenu } from "@/components/Menu/OptionsMenu";
 import ConfirmationModal from "@/components/Modals/ConfirmationModal";
-import VehicleInfoCard from "@/components/VehicleInfoCard";
-import { Maintenance, Vehicle } from "@/types/type-db";
-import {
-  deleteVehicleAndMaintenancesById,
-  getMaintenancesByVehicleId,
-  getVehicleById,
-} from "@/utils/database";
-import {
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { DEFAULT_VEHICLE_IMAGE } from "@/constants/global";
+import { Vehicle } from "@/types/type-db";
+import { deleteVehicleAndMaintenancesById, getVehicleById } from "@/utils/database";
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { Image, Linking, ScrollView, Text, View } from "react-native";
@@ -22,12 +16,22 @@ export default function VehicleInfoScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [vehicleData, setVehicleData] = useState<Vehicle>();
-  const [maintenances, setMaintenances] = useState<Maintenance[]>();
   const [showConfirm, setShowConfirm] = useState(false);
-  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(
-    null
-  );
-  const [notes, setNotes] = useState<string>();
+  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(null);  
+  const [optionsVisible, setOptionsVisible] = useState(false);
+
+  const options = [
+  {
+    label: "Editar",
+    icon: <Ionicons name="create-outline" size={18} color="#FFFFFF" />,
+    onPress: () => handleEdit(),
+  },
+  {
+    label: "Eliminar",
+    icon: <MaterialIcons name="delete-outline" size={18} color="#FFFFFF" />,
+    onPress: () => handleDelete(),
+  },
+];
 
   useFocusEffect(
     useCallback(() => {
@@ -35,25 +39,14 @@ export default function VehicleInfoScreen() {
         try {
           const vehicle = await getVehicleById(Number(id));
           setVehicleData(vehicle!);
-          setNotes(vehicle?.additional_info);
         } catch (err) {
           console.error("Error al obtener vehículo:", err);
         }
       };
-      const fetchMaintenances = async () => {
-        try {
-          const data = await getMaintenancesByVehicleId(Number(id));
-          setMaintenances(data);
-        } catch (err) {
-          console.error("Error al obtener mantenimientos:", err);
-        }
-      };
-
       fetchVehicle();
-      fetchMaintenances();
     }, [id])
   );
-
+  
   if (!vehicleData) {
     return (
       <View className="flex-1 bg-ui-body justify-center items-center">
@@ -61,21 +54,26 @@ export default function VehicleInfoScreen() {
       </View>
     );
   }
-
+  
   const handleRedirect = () => {
     setModalType("redirect");
     setShowConfirm(true);
   };
-
+  
   const handleMaintenances = () => {
     console.log("Maintenances");
   };
-
+  
   const handleDelete = () => {
     setModalType("delete");
     setShowConfirm(true);
   };
 
+  const handleEdit = () => {
+    setOptionsVisible(false);
+    router.push(`/edit/${vehicleData.id}`);
+  };
+  
   const confirmAction = async () => {
     if (modalType === "redirect") {
       Linking.openURL(vehicleData.technical_sheet!);
@@ -83,8 +81,8 @@ export default function VehicleInfoScreen() {
       try {
         await deleteVehicleAndMaintenancesById(vehicleData.id!);
         router.back();
-      } catch (err) {
-        console.error("Error al eliminar vehículo:", err);
+    } catch (err) {
+      console.error("Error al eliminar vehículo:", err);
       }
     }
     setShowConfirm(false);
@@ -98,7 +96,7 @@ export default function VehicleInfoScreen() {
           <Ionicons name="ellipsis-vertical" size={20} color="#B0B0B0" />
         }
         onBack={() => router.back()}
-        onRightPress={() => console.log("Press")}
+        onRightPress={() => setOptionsVisible(v => !v)}
         style={{
           position: "absolute",
           top: 0,
@@ -108,19 +106,27 @@ export default function VehicleInfoScreen() {
         }}
       />
 
+      {optionsVisible && (
+        <OptionsMenu
+          options={options}
+          style={{ top: 50, right: 10 }}
+          onClose={() => setOptionsVisible(false)}
+        />
+      )}
+
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ paddingBottom: 40 }}
       >
-        <Image
+            <Image
           source={
             vehicleData.image_uri && vehicleData.image_uri.trim() !== ""
               ? { uri: vehicleData.image_uri }
-              : require("@/assets/images/vehicle_banner.jpg")
+              : DEFAULT_VEHICLE_IMAGE
           }
           style={{ width: "100%", height: 200 }}
-          resizeMode="cover"
-        />
+              resizeMode="cover"
+            />
 
         <View className="px-6 pt-5">
           <Text className="text-primary text-2xl font-bold">
@@ -163,19 +169,19 @@ export default function VehicleInfoScreen() {
             />
           </View>
           <View className="mb-6">
-            <FormInput
+          <FormInput
               icon={
                 <Ionicons name="document-sharp" size={18} color="#FE9525" />
               }
-              label="Información adicional"
-              value={notes}
-              multiline
+            label="Información adicional"
+              value={vehicleData.additional_info || "Sin información adicional ingresada."}
+            multiline
               editable={false}
               backgroundColor="#1A3A66"
-            />
+          />
           </View>
         </View>
-      </ScrollView>
+        </ScrollView>
 
       <ConfirmationModal
         visible={showConfirm}

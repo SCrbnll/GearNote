@@ -25,16 +25,17 @@ export default function FormInput({
   backgroundColor = "white", 
   ...rest
 }: FormInputProps) {
+  const textColor = backgroundColor !== "white" ? "white" : "black";
   return (
-    <View>
+    <View className="mb-4">
       <View className="flex-row items-center mb-2">
         {icon}
         <Text className="text-primary font-semibold ml-2">{label}</Text>
       </View>
       <TextInput
-        className={`text-white rounded-xl px-4 py-3 ${
+        className={`rounded-xl px-4 py-3 ${
           multiline ? "h-32" : ""
-        }`}
+        } text-${textColor}`}
         style={{ backgroundColor }}
         placeholderTextColor="#999"
         keyboardType={keyboardType}
@@ -47,3 +48,4 @@ export default function FormInput({
     </View>
   );
 }
+

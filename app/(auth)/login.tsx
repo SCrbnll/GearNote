@@ -1,6 +1,7 @@
 import CustomButton from "@/components/Buttons/CustomButton";
-import FormInput from "@/components/FormInput";
+import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
+import { APP_ICON } from "@/constants/global";
 import { initDatabase, insertUser } from "@/utils/database";
 import { restoreDatabaseFromJSON } from "@/utils/databaseBackup";
 import { Ionicons } from "@expo/vector-icons";
@@ -93,7 +94,7 @@ export default function AuthScreen() {
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View className="flex-1 justify-center items-center px-6 pt-10">
             <Image
-              source={require("@/assets/images/gearnote-icon.png")}
+              source={APP_ICON}
               className="w-32 h-32 mb-6"
               resizeMode="contain"
             />

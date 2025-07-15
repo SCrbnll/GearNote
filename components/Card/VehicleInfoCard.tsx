@@ -1,6 +1,6 @@
 import { FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { View } from "react-native";
-import InfoRow from "./InfoRow";
+import InfoRow from "../InfoRow";
 
 type Props = {
   vehicle: any;

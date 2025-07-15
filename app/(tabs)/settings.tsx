@@ -1,5 +1,6 @@
 import AppHeader from "@/components/Header/AppHeader";
 import ConfirmationModal from "@/components/Modals/ConfirmationModal";
+import { DEFAULT_PFP, SCRBNLL_WEB, VERSION_APP } from "@/constants/global";
 import { clearDatabase, getUserName } from "@/utils/database";
 import { exportDatabaseToJSON } from "@/utils/databaseBackup";
 import { Ionicons } from "@expo/vector-icons";
@@ -28,7 +29,7 @@ export default function SettingsScreen() {
   
 
   const handlePortfolioRedirect = () => {
-    Linking.openURL("https://samuelcg.com");
+    Linking.openURL(SCRBNLL_WEB);
   };
 
   const handleViewData = () => {
@@ -71,7 +72,7 @@ export default function SettingsScreen() {
       <View className="p-5">
         <View className="items-center mb-6">
           <Image
-            source={require("./../../assets/images/user_pfp.png")}
+            source={DEFAULT_PFP}
             className="w-24 h-24 mb-3"
             resizeMode="cover"
           />
@@ -126,7 +127,7 @@ export default function SettingsScreen() {
             Samuel Carbonell
           </Text>
         </TouchableOpacity>
-        <Text className="text-xs text-secondary mt-1">v1.0</Text>
+        <Text className="text-xs text-secondary mt-1">v{VERSION_APP}</Text>
       </View>
     </View>
     <ConfirmationModal
