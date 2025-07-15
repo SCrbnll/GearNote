@@ -9,13 +9,20 @@ interface Props {
   onPress: () => void;
   style?: ViewStyle;
   type?: ButtonType;
+  size?: "sm" | "md" | "lg";
 }
 
 const backgroundColors: Record<ButtonType, string> = {
-    primary: "bg-blue-700",
+  primary: "bg-blue-700",
   success: "bg-green-700",
   info: "bg-ui-header",
   error: "bg-red-700",
+};
+
+const sizeHeights: Record<NonNullable<Props["size"]>, string> = {
+  sm: "h-10",
+  md: "h-14",
+  lg: "h-16",
 };
 
 export default function CustomButton({
@@ -24,12 +31,14 @@ export default function CustomButton({
   onPress,
   style,
   type = "success",
+  size = "md",
 }: Props) {
   const bgColor = backgroundColors[type];
+  const heightClass = sizeHeights[size];
 
   return (
     <TouchableOpacity
-      className={`${bgColor} w-full rounded-xl py-4 items-center flex-row justify-center gap-2`}
+      className={`${bgColor} ${heightClass} w-full rounded-xl items-center flex-row justify-center gap-2`}
       onPress={onPress}
       style={style}
     >
@@ -38,3 +47,4 @@ export default function CustomButton({
     </TouchableOpacity>
   );
 }
+

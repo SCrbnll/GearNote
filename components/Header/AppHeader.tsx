@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, ViewStyle } from "react-native";
 import CircleIconButton from "../Buttons/CIrcleIconButton";
 
 type HeaderType =
@@ -16,6 +16,7 @@ interface HeaderProps {
   onRightPress?: () => void;
   rightIcon?: React.ReactNode;
   backgroundColor?: string;
+  style?: ViewStyle;
 }
 
 export default function AppHeader({
@@ -26,6 +27,7 @@ export default function AppHeader({
   onRightPress,
   rightIcon,
   backgroundColor,
+  style,
 }: HeaderProps) {
   const bgColors = {
     home: "#1A3A66",
@@ -39,7 +41,7 @@ export default function AppHeader({
   return (
     <View
       className="flex-row items-center justify-between px-4 py-3"
-      style={{ backgroundColor: bgColor }}
+      style={[{ backgroundColor: bgColor }, style]}
     >
       {type === "home" && (
         <>

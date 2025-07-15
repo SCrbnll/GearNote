@@ -8,7 +8,7 @@ type Props = {
 
 export default function VehicleInfoCard({ vehicle }: Props) {
   return (
-    <View className="bg-background-secondary rounded-xl p-4">
+    <View className="bg-background-secondary rounded-xl p-2">
       <InfoRow
         label="Matrícula"
         value={vehicle.plate}
@@ -19,15 +19,15 @@ export default function VehicleInfoCard({ vehicle }: Props) {
         value={`${vehicle.engine}`}
         icon={<FontAwesome5 name="oil-can" size={14} color="#FE9525" />}
       />
+        <InfoRow
+          label="Kilómetros"
+          value={`${vehicle.km_total} km`}
+          icon={<MaterialIcons name="speed" size={16} color="#FE9525" />}
+        />
       <InfoRow
         label="Color"
         value={vehicle.color}
         icon={<Ionicons name="color-palette" size={16} color="#FE9525" />}
-      />
-      <InfoRow
-        label="Kilómetros"
-        value={`${vehicle.km_total} km`}
-        icon={<MaterialIcons name="speed" size={16} color="#FE9525" />}
       />
     </View>
   );

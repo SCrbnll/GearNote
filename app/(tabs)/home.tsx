@@ -54,7 +54,10 @@ export default function HomeScreen() {
                 <VehicleCard
                   id={item.id?.toString() ?? ""}
                   name={item.name}
-                  plate={item.plate}
+                  brand={item.brand}
+                  model={item.model}
+                  engine={item.engine}
+                  imageUri={item.image_uri}
                 />
               )
             }

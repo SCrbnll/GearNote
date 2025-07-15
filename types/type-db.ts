@@ -14,7 +14,8 @@ export interface Vehicle {
   engine: string;
   plate: string;
   technical_sheet?: string;
-  additional_info?: string; 
+  additional_info?: string;
+  image_uri?: string; 
 }
 
 export interface Maintenance {
@@ -46,6 +47,7 @@ type VehicleDB = {
   plate: string;
   technical_sheet: string;
   additional_info: string;
+  image_uri: string;
 };
 type MaintenanceDB = {
   id: number;

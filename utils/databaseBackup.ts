@@ -52,8 +52,8 @@ export async function restoreDatabaseFromJSON(data: BackupData) {
     for (const vehicle of data.vehicles) {
       await db.runAsync(
         `INSERT INTO vehicles 
-        (id, name, brand, model, year, color, km_total, engine, plate, technical_sheet, additional_info)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (id, name, brand, model, year, color, km_total, engine, plate, technical_sheet, additional_info, image_uri)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           vehicle.id,
           vehicle.name,
@@ -66,6 +66,7 @@ export async function restoreDatabaseFromJSON(data: BackupData) {
           vehicle.plate,
           vehicle.technical_sheet,
           vehicle.additional_info,
+          vehicle.image_uri
         ]
       );
     }

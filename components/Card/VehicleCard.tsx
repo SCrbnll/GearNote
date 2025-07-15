@@ -5,7 +5,7 @@ import { Image, Text, TouchableOpacity, View } from "react-native";
 type VehicleCardProps = {
   id: string;
   name: string;
-  plate: string;
+  brand: string;
   model?: string;
   engine?: string;
   imageUri?: string | null;
@@ -14,7 +14,7 @@ type VehicleCardProps = {
 export default function VehicleCard({
   id,
   name,
-  plate,
+  brand,
   model,
   engine,
   imageUri,
@@ -38,12 +38,8 @@ export default function VehicleCard({
 
         <View className="flex-1">
           <Text className="text-primary font-semibold text-base">{name}</Text>
-          <Text className="text-secondary text-sm">{plate}</Text>
-          {(model || engine) && (
-            <Text className="text-muted text-xs">
-              {`${model ?? ""} ${engine ?? ""}`.trim()}
-            </Text>
-          )}
+          <Text className="text-secondary text-sm">{brand} {model}</Text>
+          <Text className="text-secondary text-sm">{engine}</Text>
         </View>
 
         <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />

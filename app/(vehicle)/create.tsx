@@ -44,7 +44,7 @@ export default function EditVehicleScreen() {
     setVehicleData((prev) => ({
       ...prev,
       [field]:
-        field === "year" || field === "km_total" ? Number(value) || 0 : value,
+        field === "year" || field === "km_total" || field === "image_uri" ? Number(value) || 0 : value,
     }));
   };
 
