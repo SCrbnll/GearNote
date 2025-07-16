@@ -10,8 +10,8 @@ import { VehicleTechnicalSheet } from "./VehicleTechnicalSheet";
 import { VehicleYear } from "./VehicleYear";
 
 export {
-    VehicleAdditionalInfo, VehicleBrand, VehicleColor, VehicleEngine, VehicleKilometers, VehicleModel, VehicleName, VehiclePlate,
-    VehicleTechnicalSheet, VehicleYear
+  VehicleAdditionalInfo, VehicleBrand, VehicleColor, VehicleEngine, VehicleKilometers, VehicleModel, VehicleName, VehiclePlate,
+  VehicleTechnicalSheet, VehicleYear
 };
 
     import type { Vehicle } from "@/types/type-db";
@@ -29,4 +29,5 @@ export const valueObjectMap: Partial<Record<FieldKey, (value: any) => any>> = {
   plate: (v) => new VehiclePlate(v).getValue(),
   technical_sheet: (v) => new VehicleTechnicalSheet(v).getValue(),
   additional_info: (v) => new VehicleAdditionalInfo(v).getValue(),
+  image_uri: (v) => new VehicleAdditionalInfo(v).getValue(),
 };

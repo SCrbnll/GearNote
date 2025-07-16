@@ -62,9 +62,7 @@ export default function CreateVehicleScreen() {
 
   const pickImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== "granted") {
-      return;
-    }
+    if (status !== "granted") return;
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -88,13 +86,20 @@ export default function CreateVehicleScreen() {
       "plate",
     ];
 
+    const fieldsToValidate = Object.keys(valueObjectMap) as (keyof Vehicle)[];
     const newErrors: typeof errors = {};
     const finalData: Partial<Vehicle> = {};
 
-    for (const field of requiredFields) {
-      try {
-        const rawValue = vehicleData[field];
+    for (const field of fieldsToValidate) {
+      const rawValue = vehicleData[field];
 
+      const isOptional =
+        !requiredFields.includes(field) &&
+        (rawValue === "" || rawValue === null || rawValue === undefined);
+
+      if (isOptional) continue;
+
+      try {
         const valueToValidate =
           field === "plate" && typeof rawValue === "string"
             ? rawValue.toUpperCase()
