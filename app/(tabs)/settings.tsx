@@ -1,16 +1,22 @@
-import ConfirmationModal from "@/components/ConfirmationModal";
+import AppFooter from "@/components/AppFooter";
+import CustomButton from "@/components/Buttons/CustomButton";
+import AppHeader from "@/components/Header/AppHeader";
+import ConfirmationModal from "@/components/Modals/ConfirmationModal";
+import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
+import { DEFAULT_PFP } from "@/constants/global";
 import { clearDatabase, getUserName } from "@/utils/database";
 import { exportDatabaseToJSON } from "@/utils/databaseBackup";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, Linking, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, View } from "react-native";
 
 export default function SettingsScreen() {
   const router = useRouter();
   const [username, setUsername] = useState<string>();
   const [showConfirm, setShowConfirm] = useState(false);
   const [modalType, setModalType] = useState<"export" | "delete" | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false); 
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -21,118 +27,95 @@ export default function SettingsScreen() {
         console.error("Error al obtener los datos del usuario:", err);
       }
     };
-  
     fetchUserName();
   }, []);
-  
-
-  const handlePortfolioRedirect = () => {
-    Linking.openURL("https://samuelcg.com");
-  };
-
-  const handleViewData = () => {
-    router.push("/(debug)/view-db");
-  };
 
   const handleExportData = () => {
     setModalType("export");
     setShowConfirm(true);
   };
 
-  const handleDeleteData = async () => {
+  const handleDeleteData = () => {
     setModalType("delete");
     setShowConfirm(true);
   };
 
   const confirmAction = async () => {
-      if (modalType === "export") {
-        await exportDatabaseToJSON();
-      } else if (modalType === "delete") {
-        try{
-          await clearDatabase();
-          router.replace("/(auth)/login");
-
-        } catch (err) {
-          console.error("Error al eliminar datos:", err);
-        }
+    if (modalType === "export") {
+      await exportDatabaseToJSON();
+    } else if (modalType === "delete") {
+      try {
+        await clearDatabase();
+        setShowSuccess(true); 
+      } catch (err) {
+        console.error("Error al eliminar datos:", err);
       }
-      setShowConfirm(false);
-    };
+    }
+    setShowConfirm(false);
+  };
 
   return (
     <>
-    <View className="flex-1 bg-ui-body px-6 pt-5 justify-between">
-      <View>
-        <View className="items-center mb-6">
-          <Image
-            source={require("./../../assets/images/user_pfp.png")}
-            className="w-24 h-24 mb-3"
-            resizeMode="cover"
+      <View className="flex-1 bg-ui-body justify-between">
+        <View>
+          <AppHeader
+            type="backOptions"
+            title="Ajustes"
+            onBack={() => router.back()}
           />
-          <Text className="text-xl font-bold text-primary">{username}</Text>
+
+          <View className="px-5 mt-4 mb-6 flex-col items-center justify-center">
+            <Image
+              source={DEFAULT_PFP}
+              className="w-24 h-24"
+              resizeMode="cover"
+            />
+            <Text className="text-xl font-bold text-primary mt-2">
+              {username}
+            </Text>
+          </View>
+
+          <View className="px-5 gap-4">
+            <CustomButton
+              text="Descargar datos"
+              icon={<Ionicons name="cloud-download-outline" size={20} color="#fff" />}
+              type="primary"
+              onPress={handleExportData}
+            />
+            <CustomButton
+              text="Borrar datos"
+              icon={<Ionicons name="trash-outline" size={20} color="#fff" />}
+              type="error"
+              onPress={handleDeleteData}
+            />
+          </View>
         </View>
 
-        <View className="space-y-3 mb-6 gap-3">
-          <TouchableOpacity
-            className="flex-row bg-ui-header rounded-xl py-4 px-5 items-center justify-center"
-            onPress={handleViewData}
-          >
-            <Ionicons
-              name="server-outline"
-              size={20}
-              color="#FE9525"
-              style={{ marginRight: 10 }}
-            />
-            <Text className="text-primary font-medium">Ver base de datos</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="flex-row bg-blue-600 rounded-xl py-4 px-5 items-center justify-center"
-            onPress={handleExportData}
-          >
-            <Ionicons
-              name="cloud-download-outline"
-              size={20}
-              color="#fff"
-              style={{ marginRight: 10 }}
-            />
-            <Text className="text-white font-medium">Descargar datos</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className="flex-row bg-red-600 rounded-xl py-4 px-5 items-center justify-center"
-            onPress={handleDeleteData}
-          >
-            <Ionicons
-              name="trash-outline"
-              size={20}
-              color="#fff"
-              style={{ marginRight: 10 }}
-            />
-            <Text className="text-white font-medium">Borrar datos</Text>
-          </TouchableOpacity>
-        </View>
+        <AppFooter />
       </View>
 
-      <View className="items-center pb-6 justify-center">
-        <TouchableOpacity onPress={handlePortfolioRedirect} className="items-center">
-          <Text className="text-sm text-primary">App creada por</Text>
-          <Text className="text-base font-bold text-success underline">
-            Samuel Carbonell
-          </Text>
-        </TouchableOpacity>
-        <Text className="text-xs text-secondary mt-1">v1.0</Text>
-      </View>
-    </View>
-    <ConfirmationModal
-            visible={showConfirm}
-            title={
-              modalType === "export"
-                ? "¿Desea descargar los datos locales?"
-                : "¿Desea eliminar sus datos locales?"
-            }
-            onConfirm={confirmAction}
-            onCancel={() => setShowConfirm(false)}
-          />
+      <ConfirmationModal
+        visible={showConfirm}
+        title={
+          modalType === "export"
+            ? "¿Desea descargar los datos locales?"
+            : "¿Desea eliminar sus datos locales?"
+        }
+        onConfirm={confirmAction}
+        onCancel={() => setShowConfirm(false)}
+      />
+
+      {showSuccess && (
+        <SuccessOverlay
+          onFinish={() => router.replace("/(auth)/login")}
+          loadingText="Eliminando datos..."
+          successText="Datos eliminados con éxito"
+          successIcon={
+            <Ionicons name="trash-bin-sharp" size={90} color="#b50202" />
+          }
+          duration={3000}
+        />
+      )}
     </>
   );
 }

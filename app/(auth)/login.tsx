@@ -1,26 +1,29 @@
-import AlertModal from "@/components/AlertModal";
+import CustomButton from "@/components/Buttons/CustomButton";
+import FormInput from "@/components/Inputs/FormInput";
+import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
+import { APP_ICON } from "@/constants/global";
 import { initDatabase, insertUser } from "@/utils/database";
 import { restoreDatabaseFromJSON } from "@/utils/databaseBackup";
+import { Ionicons } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Stack, router } from "expo-router";
-import { useState } from "react";
+import { JSX, useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 
 export default function AuthScreen() {
   const [username, setUsername] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalTitle, setmodalTitle] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successText, setSuccessText] = useState("");
+  const [loadingText, setLoadingText] = useState("");
+  const [icon, setIcon] = useState<JSX.Element | null>(null);
 
   const handlePickFile = async () => {
     try {
@@ -36,44 +39,29 @@ export default function AuthScreen() {
 
         await restoreDatabaseFromJSON(jsonData);
 
-        setmodalTitle("Restauración exitosa");
-        setModalMessage("Tus datos han sido recuperados.");
-      } else {
-        setmodalTitle("Cancelado");
-        setModalMessage("La restauración fue cancelada.");
+        setLoadingText("Restaurando datos...");
+        setSuccessText("Datos restaurados con éxito");
+        setIcon(<Ionicons name="cloud-upload" size={90} color="#16a34a" />);
+        setShowSuccess(true);
       }
     } catch (err) {
       console.error("Error al restaurar:", err);
-      setmodalTitle("Error");
-      setModalMessage("No se pudo restaurar el archivo.");
-    } finally {
-      setModalVisible(true);
-    }
-  };
-
-  const handleModalClose = () => {
-    setModalVisible(false);
-    if (modalTitle === "Restauración exitosa") {
-      router.replace("/(tabs)/home");
     }
   };
 
   const handleRegister = async () => {
-    if (!username.trim()) {
-      setmodalTitle("Error");
-      setModalMessage("Por favor, ingresa un nombre de usuario.");
-      setModalVisible(true);
-      return;
-    }
+    if (!username.trim()) return;
+
     try {
       await initDatabase();
       await insertUser(username);
-      router.replace("/(tabs)/home");
+
+      setLoadingText("Creando cuenta...");
+      setSuccessText("Cuenta creada con éxito");
+      setIcon(<Ionicons name="person-add" size={90} color="#16a34a" />);
+      setShowSuccess(true);
     } catch (err) {
       console.error("Error al registrar usuario:", err);
-      setmodalTitle("Error");
-      setModalMessage("No se pudo registrar el usuario.");
-      setModalVisible(true);
     }
   };
 
@@ -92,56 +80,55 @@ export default function AuthScreen() {
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View className="flex-1 justify-center items-center px-6 pt-10">
             <Image
-              source={require("@/assets/images/gearnote-icon.png")}
+              source={APP_ICON}
               className="w-32 h-32 mb-6"
               resizeMode="contain"
             />
+            <View className="items-center gap-1">
+              <Text className="text-white text-2xl font-bold">
+                ¡Bienvenido a Gearnote!
+              </Text>
+              <Text className="text-secondary text-center mb-8">
+                Elige una opción para continuar
+              </Text>
+            </View>
 
-            <Text className="text-white text-2xl font-bold mb-2">
-              ¡Bienvenido a Gearnote!
-            </Text>
-            <Text className="text-secondary text-center mb-8">
-              Elige una opción para continuar
-            </Text>
-
-            <TouchableOpacity
-              className="bg-blue-600 w-full rounded-xl py-4 items-center mb-4"
+            <CustomButton
+              icon={<Ionicons name="cloud-upload" size={16} color="white" />}
+              text="Restaurar datos (Iniciar sesión)"
               onPress={handlePickFile}
-            >
-              <Text className="text-white font-bold text-base">
-                Restaurar datos (Iniciar sesión)
-              </Text>
-            </TouchableOpacity>
+              type="primary"
+            />
 
-            <View className="w-full mb-4">
-              <Text className="text-primary font-semibold mb-2">
-                Nombre de usuario
-              </Text>
-              <TextInput
-                className="bg-white text-black rounded-xl px-4 py-3"
+            <View className="w-full mb-4 mt-4">
+              <FormInput
+                label="Nombre de usuario"
+                icon={<Ionicons name="person" size={16} color="#FE9525" />}
                 placeholder="Tu nombre..."
                 value={username}
                 onChangeText={setUsername}
               />
             </View>
 
-            <TouchableOpacity
-              className="bg-green-700 w-full rounded-xl py-4 items-center"
+            <CustomButton
+              icon={<Ionicons name="person-add" size={16} color="#FFFFFF" />}
+              text="Crear cuenta"
               onPress={handleRegister}
-            >
-              <Text className="text-white font-bold text-base">
-                Crear cuenta
-              </Text>
-            </TouchableOpacity>
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <AlertModal
-        visible={modalVisible}
-        title={modalTitle}
-        description={modalMessage}
-        onCancel={handleModalClose}
-      />
+
+      {/* ✅ Overlay de éxito compartido */}
+      {showSuccess && (
+        <SuccessOverlay
+          loadingText={loadingText}
+          successText={successText}
+          successIcon={icon}
+          duration={3000}
+          onFinish={() => router.replace("/(tabs)/home")}
+        />
+      )}
     </>
   );
 }

@@ -13,6 +13,7 @@ content: [
         secondary: "#B0B0B0",
         error: "#E57373",
         success: "#81C784",
+        gray: "#4F4F4F",
 
         ui: {
           header: "#1A3A66",  

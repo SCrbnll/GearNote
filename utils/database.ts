@@ -1,7 +1,7 @@
 import { Maintenance, User, Vehicle } from "@/types/type-db";
 import * as SQLite from "expo-sqlite";
 
-const db = SQLite.openDatabaseSync("gearnote.db");
+const db = SQLite.openDatabaseSync("gearnote2.db");
 
 // 🟢 Inicialización de la BD
 export async function initDatabase() {
@@ -22,7 +22,8 @@ export async function initDatabase() {
         engine TEXT,
         plate TEXT,
         technical_sheet TEXT,
-        additional_info TEXT
+        additional_info TEXT,
+        image_uri TEXT
       );
 
       CREATE TABLE IF NOT EXISTS maintenances (
@@ -51,24 +52,25 @@ export async function insertUser(name: string) {
 export async function insertVehicle(vehicle: Vehicle) {
   const statement = await db.prepareAsync(`
       INSERT INTO vehicles (
-        name, brand, model, year, color, km_total, engine, plate, technical_sheet, additional_info
+        name, brand, model, year, color, km_total, engine, plate, technical_sheet, additional_info, image_uri
       ) VALUES (
-        $name, $brand, $model, $year, $color, $km_total, $engine, $plate, $technical_sheet, $additional_info
+        $name, $brand, $model, $year, $color, $km_total, $engine, $plate, $technical_sheet, $additional_info, $image_uri
       )
     `);
 
   try {
     await statement.executeAsync({
-      $name: vehicle.name,
-      $brand: vehicle.brand,
-      $model: vehicle.model,
+      $name: vehicle.name.trim(),
+      $brand: vehicle.brand.trim(),
+      $model: vehicle.model.trim(),
       $year: String(vehicle.year),
-      $color: vehicle.color ?? null,
+      $color: vehicle.color ? vehicle.color.trim() : "",
       $km_total: vehicle.km_total,
-      $engine: vehicle.engine,
-      $plate: vehicle.plate,
-      $technical_sheet: vehicle.technical_sheet ?? null,
-      $additional_info: vehicle.additional_info ?? null,
+      $engine: vehicle.engine.trim(),
+      $plate: vehicle.plate.trim(),
+      $technical_sheet: vehicle.technical_sheet ? vehicle.technical_sheet.trim() : "",
+      $additional_info: vehicle.additional_info ? vehicle.additional_info.trim() : "",
+      $image_uri: vehicle.image_uri ? vehicle.image_uri.trim() : "",
     });
   } finally {
     await statement.finalizeAsync();
@@ -107,22 +109,24 @@ export async function updateVehicle(vehicle: Vehicle) {
         engine = $engine,
         plate = $plate,
         technical_sheet = $technical_sheet,
-        additional_info = $additional_info
+        additional_info = $additional_info,
+        image_uri = $image_uri
       WHERE id = $id
     `);
   try {
     await statement.executeAsync({
       $id: vehicle.id ?? null,
-      $name: vehicle.name,
-      $brand: vehicle.brand,
-      $model: vehicle.model,
+      $name: vehicle.name.trim(),
+      $brand: vehicle.brand.trim(),
+      $model: vehicle.model.trim(),
       $year: String(vehicle.year),
-      $color: vehicle.color ?? null,
+      $color: vehicle.color ? vehicle.color.trim() : "",
       $km_total: vehicle.km_total,
-      $engine: vehicle.engine,
-      $plate: vehicle.plate,
-      $technical_sheet: vehicle.technical_sheet ?? null,
-      $additional_info: vehicle.additional_info ?? null,
+      $engine: vehicle.engine.trim(),
+      $plate: vehicle.plate.trim(),
+      $technical_sheet: vehicle.technical_sheet ? vehicle.technical_sheet.trim() : "",
+      $additional_info: vehicle.additional_info ? vehicle.additional_info.trim() : "",
+      $image_uri: vehicle.image_uri ? vehicle.image_uri.trim() : "",
     });
   } finally {
     await statement.finalizeAsync();
@@ -252,9 +256,9 @@ export async function deleteVehicleAndMaintenancesById(id: number) {
 export async function clearDatabase() {
   try {
     await db.execAsync(`
-        DELETE FROM maintenances;
-        DELETE FROM vehicles;
-        DELETE FROM user;
+      DELETE FROM maintenances;
+      DELETE FROM vehicles;
+      DELETE FROM user;
       `);
   } catch (error) {
     console.error("Error al limpiar la base de datos:", error);
