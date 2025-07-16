@@ -45,6 +45,7 @@ export default function FormInput({
         textAlignVertical={multiline ? "top" : "center"}
         editable={editable}
         selectTextOnFocus={editable}
+        scrollEnabled={multiline}
         {...rest}
       />
       {error && <Text className="text-red-500 mt-1 text-sm">{error}</Text>}

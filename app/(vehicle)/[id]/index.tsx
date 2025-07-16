@@ -206,7 +206,6 @@ export default function VehicleInfoScreen() {
                 "Sin información adicional ingresada."
               }
               multiline
-              editable={false}
               backgroundColor="#1A3A66"
             />
           </View>
