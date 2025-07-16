@@ -1,25 +1,22 @@
-import {
-    Ionicons
-} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import {
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView
-} from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 
 import CustomButton from "@/components/Buttons/CustomButton";
 import AppHeader from "@/components/Header/AppHeader";
 import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
+import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
 import { INPUT_FIELDS_MAINTENANCE } from "@/constants/global";
 import { Maintenance } from "@/types/type-db";
 import { insertMaintenance } from "@/utils/database";
+import { valueObjectMap } from "@/utils/valueObjects/maintenance";
 
-export default function EditMaintenanceScreen() {
+export default function CreateMaintenanceScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
+
   const [maintenanceData, setMaintenanceData] = useState<Maintenance>({
     vehicle_id: Number(id),
     title: "",
@@ -29,10 +26,21 @@ export default function EditMaintenanceScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof Maintenance, string>>
+  >({});
+  const [showSuccess, setShowSuccess] = useState(false);
 
+  const updateField = (field: keyof Maintenance, value: string) => {
+    setMaintenanceData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
 
-  const updateField = (field: keyof Maintenance, value: any) => {
-    setMaintenanceData((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({
+      ...prev,
+      [field]: "",
+    }));
   };
 
   const handleSave = async () => {
@@ -41,17 +49,45 @@ export default function EditMaintenanceScreen() {
       "date",
       "vehicle_id",
     ];
-    const missing = requiredFields.filter((field) => !maintenanceData[field]);
 
-    if (missing.length > 0) {
-      setModalMessage(`Faltan campos obligatorios: ${missing.join(", ")}`);
+    const newErrors: typeof errors = {};
+    const finalData: Partial<Maintenance> = {};
+
+    for (const field of requiredFields) {
+      try {
+        const rawValue = maintenanceData[field];
+
+        const parser = valueObjectMap[field];
+        if (parser) {
+          const parsed = parser(rawValue);
+          finalData[field] = parsed;
+        }
+      } catch (error: any) {
+        newErrors[field] = error.message || "Valor inválido";
+      }
+    }
+
+    if (maintenanceData.description) {
+      try {
+        const parser = valueObjectMap.description;
+        if (parser) {
+          finalData.description = parser(maintenanceData.description);
+        }
+      } catch (error: any) {
+        newErrors.description = error.message || "Valor inválido";
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setModalMessage("Corrige los errores antes de guardar.");
       setModalVisible(true);
       return;
     }
 
     try {
-      await insertMaintenance(maintenanceData);
-      router.back();
+      await insertMaintenance(finalData as Maintenance);
+      setShowSuccess(true);
     } catch (err) {
       console.error("Error al guardar el mantenimiento:", err);
       setModalMessage("Ocurrió un error al guardar el mantenimiento.");
@@ -62,10 +98,10 @@ export default function EditMaintenanceScreen() {
   return (
     <>
       <AppHeader
-            type="backOptions" 
-            title="Agregar mantenimiento"       
-            onBack={() => router.back()}
-        />
+        type="backOptions"
+        title="Agregar mantenimiento"
+        onBack={() => router.back()}
+      />
 
       <KeyboardAvoidingView
         className="flex-1"
@@ -74,20 +110,21 @@ export default function EditMaintenanceScreen() {
         <ScrollView className="flex-1 px-6 pt-4">
           {INPUT_FIELDS_MAINTENANCE.map(
             ({ label, field, placeholder, icon, keyboardType, multiline }) => (
-                <FormInput
-                    key={field}
-                    label={label}
-                    icon={icon}
-                    placeholder={placeholder}
-                    keyboardType={keyboardType}
-                    value={String(maintenanceData[field] ?? "")}
-                    multiline={multiline}
-                    onChangeText={(text) =>
-                    updateField(field as keyof Maintenance, text)
-                    }
-                />
+              <FormInput
+                key={field}
+                label={label}
+                icon={icon}
+                placeholder={placeholder}
+                keyboardType={keyboardType}
+                value={String(maintenanceData[field] ?? "")}
+                multiline={multiline}
+                error={errors[field]}
+                onChangeText={(text) =>
+                  updateField(field as keyof Maintenance, text)
+                }
+              />
             )
-        )}
+          )}
 
           <CustomButton
             text="Agregar mantenimiento"
@@ -95,15 +132,29 @@ export default function EditMaintenanceScreen() {
             type="success"
             icon={<Ionicons name="add-circle" size={24} color="white" />}
           />
+
+          <View className="h-16" />
         </ScrollView>
       </KeyboardAvoidingView>
 
       <AlertModal
         visible={modalVisible}
-        title="Error"
+        title="Aviso"
         description={modalMessage}
         onCancel={() => setModalVisible(false)}
       />
+
+      {showSuccess && (
+        <SuccessOverlay
+          onFinish={() => router.back()}
+          loadingText="Añadiendo mantenimiento..."
+          successText="Mantenimiento añadido con éxito"
+          successIcon={
+            <Ionicons name="checkmark-circle" size={90} color="#4CAF50" />
+          }
+          duration={3000}
+        />
+      )}
     </>
   );
 }

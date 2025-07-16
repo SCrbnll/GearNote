@@ -31,14 +31,11 @@ export default function AuthScreen() {
         type: "application/json",
         copyToCacheDirectory: true,
       });
-
       if (!result.canceled) {
         const fileUri = result.assets[0].uri;
         const content = await FileSystem.readAsStringAsync(fileUri);
         const jsonData = JSON.parse(content);
-
         await restoreDatabaseFromJSON(jsonData);
-
         setLoadingText("Restaurando datos...");
         setSuccessText("Datos restaurados con éxito");
         setIcon(<Ionicons name="cloud-upload" size={90} color="#16a34a" />);
@@ -51,11 +48,9 @@ export default function AuthScreen() {
 
   const handleRegister = async () => {
     if (!username.trim()) return;
-
     try {
       await initDatabase();
       await insertUser(username);
-
       setLoadingText("Creando cuenta...");
       setSuccessText("Cuenta creada con éxito");
       setIcon(<Ionicons name="person-add" size={90} color="#16a34a" />);
@@ -119,7 +114,6 @@ export default function AuthScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
 
-      {/* ✅ Overlay de éxito compartido */}
       {showSuccess && (
         <SuccessOverlay
           loadingText={loadingText}

@@ -13,16 +13,18 @@ interface FormInputProps extends TextInputProps {
   keyboardType?: KeyboardTypeOptions;
   multiline?: boolean;
   editable?: boolean;
-  backgroundColor?: string; 
+  backgroundColor?: string;
+  error?: string;
 }
 
 export default function FormInput({
   label,
   icon,
+  error,
   keyboardType = "default",
   multiline = false,
   editable = true,
-  backgroundColor = "white", 
+  backgroundColor = "white",
   ...rest
 }: FormInputProps) {
   const textColor = backgroundColor !== "white" ? "white" : "black";
@@ -33,9 +35,9 @@ export default function FormInput({
         <Text className="text-primary font-semibold ml-2">{label}</Text>
       </View>
       <TextInput
-        className={`rounded-xl px-4 py-3 ${
-          multiline ? "h-32" : ""
-        } text-${textColor}`}
+        className={`rounded-xl px-4 py-3 border ${
+          error ? "border-red-500" : "border-gray-200"
+        } ${multiline ? "h-32" : ""} text-${textColor}`}
         style={{ backgroundColor }}
         placeholderTextColor="#999"
         keyboardType={keyboardType}
@@ -43,9 +45,10 @@ export default function FormInput({
         textAlignVertical={multiline ? "top" : "center"}
         editable={editable}
         selectTextOnFocus={editable}
+        scrollEnabled={multiline}
         {...rest}
       />
+      {error && <Text className="text-red-500 mt-1 text-sm">{error}</Text>}
     </View>
   );
 }
-

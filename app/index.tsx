@@ -14,12 +14,10 @@ export default function Index() {
       setIsLoggedIn(exists);
       setIsLoading(false);
     };
-
     checkLogin();
   }, []);
 
   if (isLoading) return null;
-
   if (isLoggedIn) {
     return <Redirect href="/(tabs)/home" />;
   } else {

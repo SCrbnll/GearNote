@@ -7,7 +7,6 @@ import { Link, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { FlatList, Text, View } from "react-native";
 
-
 export default function HomeScreen() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const router = useRouter();
@@ -22,7 +21,6 @@ export default function HomeScreen() {
           console.error("Error al obtener vehículos:", err);
         }
       };
-
       fetchVehicles();
     }, [])
   );
@@ -36,42 +34,43 @@ export default function HomeScreen() {
         onRightPress={() => router.push("/(tabs)/settings")}
       />
       <View className="p-5">
-          <View className="flex-row justify-between items-center mb-4">
-            <View className="flex-row items-center">
-              <Ionicons name="home-sharp" size={20} color="#fff" />
-              <Text className="text-white text-lg font-bold ml-3">Mi garaje</Text>
-            </View>
-            <Link href="/(vehicle)/create" asChild>
-              <Ionicons name="add" size={20} color="#fff" />
-            </Link>
+        <View className="flex-row justify-between items-center mb-4">
+          <View className="flex-row items-center">
+            <Ionicons name="home-sharp" size={20} color="#fff" />
+            <Text className="text-white text-lg font-bold ml-3">Mi garaje</Text>
           </View>
-          <View className="border-b-2 border-gray mb-3"></View>
-
-          <FlatList
-            data={vehicles}
-            keyExtractor={(item) => item.id?.toString() ?? Math.random().toString()}
-            renderItem={({ item }) => (
-                <VehicleCard
-                  id={item.id?.toString() ?? ""}
-                  name={item.name}
-                  brand={item.brand}
-                  model={item.model}
-                  engine={item.engine}
-                  imageUri={item.image_uri}
-                />
-              )
-            }
-            ListEmptyComponent={
-              <View className="mt-10 items-center">
-                <Ionicons name="car-outline" size={40} color="#FE9525" />
-                <Text className="text-primary text-sm mt-2 text-center">
-                  No hay vehiculos registrados
-                </Text>
-              </View>
-            }
-            showsVerticalScrollIndicator={false}
-          />
+          <Link href="/(vehicle)/create" asChild>
+            <Ionicons name="add" size={20} color="#fff" />
+          </Link>
         </View>
+        <View className="border-b-2 border-gray mb-3"></View>
+
+        <FlatList
+          data={vehicles}
+          keyExtractor={(item) =>
+            item.id?.toString() ?? Math.random().toString()
+          }
+          renderItem={({ item }) => (
+            <VehicleCard
+              id={item.id?.toString() ?? ""}
+              name={item.name}
+              brand={item.brand}
+              model={item.model}
+              engine={item.engine}
+              imageUri={item.image_uri}
+            />
+          )}
+          ListEmptyComponent={
+            <View className="mt-10 items-center">
+              <Ionicons name="car-outline" size={40} color="#FE9525" />
+              <Text className="text-primary text-sm mt-2 text-center">
+                No hay vehiculos registrados
+              </Text>
+            </View>
+          }
+          showsVerticalScrollIndicator={false}
+        />
       </View>
+    </View>
   );
 }

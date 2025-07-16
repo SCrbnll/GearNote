@@ -16,11 +16,15 @@ import AppHeader from "@/components/Header/AppHeader";
 import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
 import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
-import { DEFAULT_VEHICLE_IMAGE, INPUT_FIELDS_VEHICLE } from "@/constants/global";
+import {
+  DEFAULT_VEHICLE_IMAGE,
+  INPUT_FIELDS_VEHICLE,
+} from "@/constants/global";
 import { Vehicle } from "@/types/type-db";
 import { insertVehicle } from "@/utils/database";
+import { valueObjectMap } from "@/utils/valueObjects/vehicle";
 
-export default function EditVehicleScreen() {
+export default function CreateVehicleScreen() {
   const router = useRouter();
 
   const [vehicleData, setVehicleData] = useState<Vehicle>({
@@ -40,13 +44,19 @@ export default function EditVehicleScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-
+  const [errors, setErrors] = useState<Partial<Record<keyof Vehicle, string>>>(
+    {}
+  );
 
   const updateField = (field: keyof Vehicle, value: string) => {
     setVehicleData((prev) => ({
       ...prev,
-      [field]:
-        field === "year" || field === "km_total" ? Number(value) || 0 : value,
+      [field]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [field]: "",
     }));
   };
 
@@ -78,19 +88,38 @@ export default function EditVehicleScreen() {
       "plate",
     ];
 
-    const missing = requiredFields.filter(
-      (field) => !vehicleData[field] || vehicleData[field] === 0
-    );
+    const newErrors: typeof errors = {};
+    const finalData: Partial<Vehicle> = {};
 
-    if (missing.length > 0) {
-      setModalMessage(`Faltan campos obligatorios: ${missing.join(", ")}`);
+    for (const field of requiredFields) {
+      try {
+        const rawValue = vehicleData[field];
+
+        const valueToValidate =
+          field === "plate" && typeof rawValue === "string"
+            ? rawValue.toUpperCase()
+            : rawValue;
+
+        const parser = valueObjectMap[field];
+        if (parser) {
+          const parsed = parser(valueToValidate);
+          finalData[field] = parsed;
+        }
+      } catch (error: any) {
+        newErrors[field] = error.message || "Valor inválido";
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setModalMessage("Corrige los errores antes de guardar.");
       setModalVisible(true);
       return;
     }
 
     try {
-      await insertVehicle(vehicleData);
-      setShowSuccess(true); 
+      await insertVehicle(finalData as Vehicle);
+      setShowSuccess(true);
     } catch (err) {
       console.error("Error al guardar vehículo:", err);
       setModalMessage("Ocurrió un error al guardar el vehículo.");
@@ -101,8 +130,8 @@ export default function EditVehicleScreen() {
   return (
     <>
       <AppHeader
-        type="backOptions" 
-        title="Agregar vehículo"       
+        type="backOptions"
+        title="Agregar vehículo"
         onBack={() => router.back()}
       />
 
@@ -139,6 +168,7 @@ export default function EditVehicleScreen() {
                 keyboardType={keyboardType}
                 value={String(vehicleData[field] ?? "")}
                 multiline={multiline}
+                error={errors[field]}
                 onChangeText={(text) =>
                   updateField(field as keyof Vehicle, text)
                 }
@@ -168,7 +198,9 @@ export default function EditVehicleScreen() {
           onFinish={() => router.back()}
           loadingText="Añadiendo vehículo..."
           successText="Vehículo añadido con éxito"
-          successIcon={<Ionicons name="checkmark-circle" size={90} color="#4CAF50" />}
+          successIcon={
+            <Ionicons name="checkmark-circle" size={90} color="#4CAF50" />
+          }
           duration={3000}
         />
       )}

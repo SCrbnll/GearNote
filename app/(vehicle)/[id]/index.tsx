@@ -7,65 +7,76 @@ import ConfirmationModal from "@/components/Modals/ConfirmationModal";
 import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
 import { DEFAULT_VEHICLE_IMAGE } from "@/constants/global";
 import { Vehicle } from "@/types/type-db";
-import { deleteVehicleAndMaintenancesById, getVehicleById } from "@/utils/database";
-import { Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import {
+    deleteVehicleAndMaintenancesById,
+    getVehicleById,
+} from "@/utils/database";
+import {
+    Ionicons,
+    MaterialCommunityIcons,
+    MaterialIcons,
+} from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Image, Linking, ScrollView, Text, View } from "react-native";
+import {
+    ActivityIndicator,
+    Image,
+    Linking,
+    ScrollView,
+    Text,
+    View,
+} from "react-native";
 
 export default function VehicleInfoScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const [vehicleData, setVehicleData] = useState<Vehicle>();
   const [showConfirm, setShowConfirm] = useState(false);
-  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(null);  
+  const [modalType, setModalType] = useState<"delete" | "redirect" | null>(
+    null
+  );
   const [optionsVisible, setOptionsVisible] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const options = [
-  {
-    label: "Editar",
-    icon: <Ionicons name="create-outline" size={18} color="#FFFFFF" />,
-    onPress: () => handleEdit(),
-  },
-  {
-    label: "Eliminar",
-    icon: <MaterialIcons name="delete-outline" size={18} color="#FFFFFF" />,
-    onPress: () => handleDelete(),
-  },
-];
+    {
+      label: "Editar",
+      icon: <Ionicons name="create-outline" size={18} color="#FFFFFF" />,
+      onPress: () => handleEdit(),
+    },
+    {
+      label: "Eliminar",
+      icon: <MaterialIcons name="delete-outline" size={18} color="#FFFFFF" />,
+      onPress: () => handleDelete(),
+    },
+  ];
 
   useFocusEffect(
-  useCallback(() => {
-    let isActive = true;
-
-    const fetchVehicle = async () => {
-      try {
-        const [vehicle] = await Promise.all([
-          getVehicleById(Number(id)),
-          new Promise((resolve) => setTimeout(resolve, 1000)), 
-        ]);
-
-        if (isActive && vehicle) {
+    useCallback(() => {
+      let isActive = true;
+      const fetchVehicle = async () => {
+        try {
+          const [vehicle] = await Promise.all([
+            getVehicleById(Number(id)),
+            new Promise((resolve) => setTimeout(resolve, 1000)),
+          ]);
+          if (isActive && vehicle) {
             setVehicleData(vehicle);
             setIsLoading(false);
+          }
+        } catch (err) {
+          console.error("Error al obtener vehículo:", err);
+          setIsLoading(false);
         }
-      } catch (err) {
-        console.error("Error al obtener vehículo:", err);
-        setIsLoading(false);
-      }
-    };
+      };
+      fetchVehicle();
+      return () => {
+        isActive = false;
+      };
+    }, [id])
+  );
 
-    fetchVehicle();
-
-    return () => {
-      isActive = false;
-    };
-  }, [id])
-);
-
-  
   if (isLoading) {
     return (
       <View className="flex-1 bg-ui-body justify-center items-center">
@@ -73,16 +84,16 @@ export default function VehicleInfoScreen() {
       </View>
     );
   }
-  
+
   const handleRedirect = () => {
-    setModalType("redirect"); 
+    setModalType("redirect");
     setShowConfirm(true);
   };
-  
+
   const handleMaintenances = () => {
     router.push(`/(vehicle)/${vehicleData!.id}/(maintenances)`);
   };
-  
+
   const handleDelete = () => {
     setModalType("delete");
     setShowConfirm(true);
@@ -92,16 +103,16 @@ export default function VehicleInfoScreen() {
     setOptionsVisible(false);
     router.push(`/(vehicle)/${vehicleData!.id}/edit`);
   };
-  
+
   const confirmAction = async () => {
     if (modalType === "redirect") {
       Linking.openURL(vehicleData!.technical_sheet!);
     } else if (modalType === "delete") {
       try {
         await deleteVehicleAndMaintenancesById(vehicleData!.id!);
-        setShowSuccess(true); 
-    } catch (err) {
-      console.error("Error al eliminar vehículo:", err);
+        setShowSuccess(true);
+      } catch (err) {
+        console.error("Error al eliminar vehículo:", err);
       }
     }
     setShowConfirm(false);
@@ -115,7 +126,7 @@ export default function VehicleInfoScreen() {
           <Ionicons name="ellipsis-vertical" size={20} color="#B0B0B0" />
         }
         onBack={() => router.back()}
-        onRightPress={() => setOptionsVisible(v => !v)}
+        onRightPress={() => setOptionsVisible((v) => !v)}
         style={{
           position: "absolute",
           top: 0,
@@ -133,17 +144,16 @@ export default function VehicleInfoScreen() {
         />
       )}
 
-      <ScrollView
-      >
-            <Image
+      <ScrollView>
+        <Image
           source={
             vehicleData!.image_uri && vehicleData!.image_uri.trim() !== ""
               ? { uri: vehicleData!.image_uri }
               : DEFAULT_VEHICLE_IMAGE
           }
           style={{ width: "100%", height: 200 }}
-              resizeMode="cover"
-            />
+          resizeMode="cover"
+        />
 
         <View className="px-6 pt-5">
           <Text className="text-primary text-2xl font-bold">
@@ -186,19 +196,21 @@ export default function VehicleInfoScreen() {
             />
           </View>
           <View className="mb-6">
-          <FormInput
+            <FormInput
               icon={
                 <Ionicons name="document-sharp" size={18} color="#FE9525" />
               }
-            label="Información adicional"
-              value={vehicleData!.additional_info || "Sin información adicional ingresada."}
-            multiline
-              editable={false}
+              label="Información adicional"
+              value={
+                vehicleData!.additional_info ||
+                "Sin información adicional ingresada."
+              }
+              multiline
               backgroundColor="#1A3A66"
-          />
+            />
           </View>
         </View>
-        </ScrollView>
+      </ScrollView>
 
       <ConfirmationModal
         visible={showConfirm}
@@ -216,7 +228,9 @@ export default function VehicleInfoScreen() {
           onFinish={() => router.back()}
           loadingText="Eliminando vehículo..."
           successText="Vehículo eliminado con éxito"
-          successIcon={<Ionicons name="trash-bin-sharp" size={90} color="#b50202" />}
+          successIcon={
+            <Ionicons name="trash-bin-sharp" size={90} color="#b50202" />
+          }
           duration={3000}
         />
       )}

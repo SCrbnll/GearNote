@@ -21,7 +21,12 @@ export default function MaintenanceScreen() {
       const fetchMaintenances = async () => {
         try {
           const data = await getMaintenancesByVehicleId(Number(id));
-          setMaintenances(data);
+          const sortedData = data.sort((a, b) => {
+            return (
+              parseDateDMY(b.date).getTime() - parseDateDMY(a.date).getTime()
+            );
+          });
+          setMaintenances(sortedData);
         } catch (err) {
           console.error("Error al obtener mantenimientos:", err);
         }
@@ -57,6 +62,11 @@ export default function MaintenanceScreen() {
     );
   }
 
+  const parseDateDMY = (dateStr: string) => {
+    const [day, month, year] = dateStr.split("/").map(Number);
+    return new Date(year, month - 1, day);
+  };
+
   return (
     <>
       <AppHeader
@@ -72,14 +82,16 @@ export default function MaintenanceScreen() {
         <FlatList
           data={maintenances}
           keyExtractor={(item) => String(item.id)}
-          renderItem={({ item }) => 
-            <MaintenanceCard 
-                item={item}
-                onDeleted={(idToRemove) => {
-                    setMaintenances(prev => prev.filter(m => m.id !== idToRemove));
-                }} 
+          renderItem={({ item }) => (
+            <MaintenanceCard
+              item={item}
+              onDeleted={(idToRemove) => {
+                setMaintenances((prev) =>
+                  prev.filter((m) => m.id !== idToRemove)
+                );
+              }}
             />
-        }
+          )}
           ListEmptyComponent={
             <View className="mt-10 items-center">
               <Ionicons name="clipboard-outline" size={40} color="#FE9525" />
