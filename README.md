@@ -50,3 +50,5 @@ npm install -g expo-cli
 npx expo start
 ```
 > Escanea el QR que aparece en la terminal con la app Expo Go o ejecuta en un emulador.
+
+![GearNote](assets/images/app_banner.png)
