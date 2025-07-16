@@ -1,30 +1,30 @@
 import CustomButton from "@/components/Buttons/CustomButton";
+import InfoCardScroll from "@/components/Card/InfoCardScroll";
 import VehicleInfoCard from "@/components/Card/VehicleInfoCard";
 import AppHeader from "@/components/Header/AppHeader";
-import FormInput from "@/components/Inputs/FormInput";
 import { OptionsMenu } from "@/components/Menu/OptionsMenu";
 import ConfirmationModal from "@/components/Modals/ConfirmationModal";
 import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
 import { DEFAULT_VEHICLE_IMAGE } from "@/constants/global";
 import { Vehicle } from "@/types/type-db";
 import {
-    deleteVehicleAndMaintenancesById,
-    getVehicleById,
+  deleteVehicleAndMaintenancesById,
+  getVehicleById,
 } from "@/utils/database";
 import {
-    Ionicons,
-    MaterialCommunityIcons,
-    MaterialIcons,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-    ActivityIndicator,
-    Image,
-    Linking,
-    ScrollView,
-    Text,
-    View,
+  ActivityIndicator,
+  Image,
+  Linking,
+  ScrollView,
+  Text,
+  View,
 } from "react-native";
 
 export default function VehicleInfoScreen() {
@@ -196,17 +196,12 @@ export default function VehicleInfoScreen() {
             />
           </View>
           <View className="mb-6">
-            <FormInput
-              icon={
-                <Ionicons name="document-sharp" size={18} color="#FE9525" />
-              }
+            <InfoCardScroll
               label="Información adicional"
-              value={
-                vehicleData!.additional_info ||
-                "Sin información adicional ingresada."
+              icon={<Ionicons name="document-sharp" size={18} color="#FE9525" />}
+              content={
+                vehicleData?.additional_info || "Sin información adicional ingresada."
               }
-              multiline
-              backgroundColor="#1A3A66"
             />
           </View>
         </View>

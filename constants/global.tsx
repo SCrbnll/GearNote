@@ -13,7 +13,7 @@ export const DEFAULT_VEHICLE_IMAGE = require("@/assets/images/vehicle_banner.jpg
 export const DEFAULT_PFP = require("@/assets/images/user_pfp.png");
 export const APP_ICON = require("@/assets/images/gearnote-icon.png");
 export const SCRBNLL_WEB = "https://samuelcg.com";
-export const VERSION_APP = "2.0.1";
+export const VERSION_APP = "2.0.2";
 export const DB_NAME = "gearnote.db";
 export const DB_PATH = FileSystem.documentDirectory + DB_NAME
 
