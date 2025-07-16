@@ -1,0 +1,96 @@
+import MaintenanceCard from "@/components/Card/MaintenanceCard";
+import AppHeader from "@/components/Header/AppHeader";
+import { Maintenance, Vehicle } from "@/types/type-db";
+import { getMaintenancesByVehicleId, getVehicleById } from "@/utils/database";
+import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
+
+export default function MaintenanceScreen() {
+  const [maintenances, setMaintenances] = useState<Maintenance[]>([]);
+  const [vehicle, setVehicle] = useState<Vehicle>();
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const { id } = useLocalSearchParams();
+
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true;
+
+      const fetchMaintenances = async () => {
+        try {
+          const data = await getMaintenancesByVehicleId(Number(id));
+          setMaintenances(data);
+        } catch (err) {
+          console.error("Error al obtener mantenimientos:", err);
+        }
+      };
+
+      const fetchVehicle = async () => {
+        try {
+          const [vehicle] = await Promise.all([
+            getVehicleById(Number(id)),
+            new Promise((resolve) => setTimeout(resolve, 500)),
+          ]);
+
+          if (isActive && vehicle) {
+            setVehicle(vehicle);
+            setIsLoading(false);
+          }
+        } catch (err) {
+          console.error("Error al obtener vehículo:", err);
+          setIsLoading(false);
+        }
+      };
+
+      fetchMaintenances();
+      fetchVehicle();
+    }, [])
+  );
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 bg-ui-body justify-center items-center">
+        <ActivityIndicator size="large" color="#FE9525" />
+      </View>
+    );
+  }
+
+  return (
+    <>
+      <AppHeader
+        type="backOptions"
+        title={`Matenimientos ${vehicle?.name}`}
+        rightIcon={<Ionicons name="add" size={20} color="#B0B0B0" />}
+        onBack={() => router.back()}
+        onRightPress={() =>
+          router.push(`/(vehicle)/${id}/(maintenances)/create`)
+        }
+      />
+      <View className="flex-1 bg-ui-body px-6 pt-6">
+        <FlatList
+          data={maintenances}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => 
+            <MaintenanceCard 
+                item={item}
+                onDeleted={(idToRemove) => {
+                    setMaintenances(prev => prev.filter(m => m.id !== idToRemove));
+                }} 
+            />
+        }
+          ListEmptyComponent={
+            <View className="mt-10 items-center">
+              <Ionicons name="clipboard-outline" size={40} color="#FE9525" />
+              <Text className="text-primary text-sm mt-2 text-center">
+                No hay mantenimientos registrados
+              </Text>
+            </View>
+          }
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </>
+  );
+}

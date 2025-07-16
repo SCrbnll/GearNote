@@ -62,13 +62,14 @@ export default function AppHeader({
           <Text className="text-white font-bold text-xl flex-1 pl-8">
             {title}
           </Text>
-          {rightIcon ? 
-          <CircleIconButton
-              onPress={onRightPress}
-              icon={ <Ionicons name="ellipsis-vertical" size={20} color="#B0B0B0" />}
-            />
-          :
-          <View style={{ width: 20 }} />
+          {rightIcon ? (
+            <CircleIconButton
+                onPress={onRightPress}
+                icon={ rightIcon ?? <Ionicons name="ellipsis-vertical" size={20} color="#B0B0B0" /> }
+              />
+          ) : (
+            <View style={{ width: 24 }} />
+          )
           }
         </>
       )}

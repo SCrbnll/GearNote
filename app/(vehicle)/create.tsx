@@ -16,7 +16,7 @@ import AppHeader from "@/components/Header/AppHeader";
 import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
 import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
-import { DEFAULT_VEHICLE_IMAGE, INPUT_FIELDS } from "@/constants/global";
+import { DEFAULT_VEHICLE_IMAGE, INPUT_FIELDS_VEHICLE } from "@/constants/global";
 import { Vehicle } from "@/types/type-db";
 import { insertVehicle } from "@/utils/database";
 
@@ -129,7 +129,7 @@ export default function EditVehicleScreen() {
             </View>
           </View>
 
-          {INPUT_FIELDS.map(
+          {INPUT_FIELDS_VEHICLE.map(
             ({ label, field, placeholder, icon, keyboardType, multiline }) => (
               <FormInput
                 key={field}

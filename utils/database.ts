@@ -60,17 +60,17 @@ export async function insertVehicle(vehicle: Vehicle) {
 
   try {
     await statement.executeAsync({
-      $name: vehicle.name,
-      $brand: vehicle.brand,
-      $model: vehicle.model,
+      $name: vehicle.name.trim(),
+      $brand: vehicle.brand.trim(),
+      $model: vehicle.model.trim(),
       $year: String(vehicle.year),
-      $color: vehicle.color ?? null,
+      $color: vehicle.color ? vehicle.color.trim() : null,
       $km_total: vehicle.km_total,
-      $engine: vehicle.engine,
-      $plate: vehicle.plate,
-      $technical_sheet: vehicle.technical_sheet ?? null,
-      $additional_info: vehicle.additional_info ?? null,
-      $image_uri: vehicle.image_uri ?? null,
+      $engine: vehicle.engine.trim(),
+      $plate: vehicle.plate.trim(),
+      $technical_sheet: vehicle.technical_sheet ? vehicle.technical_sheet.trim() : null,
+      $additional_info: vehicle.additional_info ? vehicle.additional_info.trim() : null,
+      $image_uri: vehicle.image_uri ? vehicle.image_uri.trim() : null,
     });
   } finally {
     await statement.finalizeAsync();
@@ -116,17 +116,17 @@ export async function updateVehicle(vehicle: Vehicle) {
   try {
     await statement.executeAsync({
       $id: vehicle.id ?? null,
-      $name: vehicle.name,
-      $brand: vehicle.brand,
-      $model: vehicle.model,
+      $name: vehicle.name.trim(),
+      $brand: vehicle.brand.trim(),
+      $model: vehicle.model.trim(),
       $year: String(vehicle.year),
-      $color: vehicle.color ?? null,
+      $color: vehicle.color ? vehicle.color.trim() : null,
       $km_total: vehicle.km_total,
-      $engine: vehicle.engine,
-      $plate: vehicle.plate,
-      $technical_sheet: vehicle.technical_sheet ?? null,
-      $additional_info: vehicle.additional_info ?? null,
-      $imageUri: vehicle.image_uri ?? null,
+      $engine: vehicle.engine.trim(),
+      $plate: vehicle.plate.trim(),
+      $technical_sheet: vehicle.technical_sheet ? vehicle.technical_sheet.trim() : null,
+      $additional_info: vehicle.additional_info ? vehicle.additional_info.trim() : null,
+      $image_uri: vehicle.image_uri ? vehicle.image_uri.trim() : null,
     });
   } finally {
     await statement.finalizeAsync();

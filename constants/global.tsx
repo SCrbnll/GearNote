@@ -1,3 +1,4 @@
+import { Maintenance } from "@/types/type-db";
 import {
   FontAwesome5,
   Ionicons,
@@ -27,7 +28,7 @@ export interface Vehicle {
   image_uri: string;
 }
 
-export const INPUT_FIELDS: {
+export const INPUT_FIELDS_VEHICLE: {
   label: string;
   field: keyof Vehicle;
   placeholder?: string;
@@ -96,5 +97,37 @@ export const INPUT_FIELDS: {
     field: "additional_info",
     multiline: true,
     icon: <Ionicons name="document-sharp" size={18} color="#FE9525" />,
+  },
+];
+
+export const INPUT_FIELDS_MAINTENANCE: {
+  label: string;
+  field: keyof Maintenance;
+  placeholder?: string;
+  icon?: React.ReactNode;
+  keyboardType?: "default" | "numeric" | "url";
+  multiline?: boolean;
+  numberOfLines?: number;
+}[] = [
+  {
+    label: "Fecha *",
+    field: "date",
+    placeholder: "YYYY-MM-DD",
+    keyboardType: "numeric",
+    icon: <Ionicons name="calendar" size={18} color="#FE9525" />,
+  },
+  {
+    label: "Título *",
+    field: "title",
+    placeholder: "Ej: Cambio de aceite",
+    icon: <MaterialCommunityIcons name="tools" size={18} color="#FE9525" />,
+  },
+  {
+    label: "Descripción",
+    field: "description",
+    placeholder: "Describe el mantenimiento...",
+    multiline: true,
+    numberOfLines: 6,
+    icon: <Ionicons name="document-text" size={18} color="#FE9525" />,
   },
 ];

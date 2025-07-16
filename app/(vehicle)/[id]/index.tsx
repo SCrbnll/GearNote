@@ -75,12 +75,12 @@ export default function VehicleInfoScreen() {
   }
   
   const handleRedirect = () => {
-    setModalType("redirect");
+    setModalType("redirect"); 
     setShowConfirm(true);
   };
   
   const handleMaintenances = () => {
-    console.log("Maintenances");
+    router.push(`/(vehicle)/${vehicleData!.id}/(maintenances)`);
   };
   
   const handleDelete = () => {
@@ -90,7 +90,7 @@ export default function VehicleInfoScreen() {
 
   const handleEdit = () => {
     setOptionsVisible(false);
-    router.push(`/edit/${vehicleData!.id}`);
+    router.push(`/(vehicle)/${vehicleData!.id}/edit`);
   };
   
   const confirmAction = async () => {

@@ -42,7 +42,7 @@ export default function HomeScreen() {
               <Text className="text-white text-lg font-bold ml-3">Mi garaje</Text>
             </View>
             <Link href="/(vehicle)/create" asChild>
-              <Ionicons name="add-circle" size={20} color="#FFFFFF" />
+              <Ionicons name="add" size={20} color="#FFFFFF" />
             </Link>
           </View>
           <View className="border-b-2 border-gray mb-3"></View>
