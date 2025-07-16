@@ -48,8 +48,8 @@ export default function VehicleInfoScreen() {
         ]);
 
         if (isActive && vehicle) {
-          setVehicleData(vehicle);
-          setIsLoading(false);
+            setVehicleData(vehicle);
+            setIsLoading(false);
         }
       } catch (err) {
         console.error("Error al obtener vehículo:", err);
@@ -134,8 +134,6 @@ export default function VehicleInfoScreen() {
       )}
 
       <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: 40 }}
       >
             <Image
           source={

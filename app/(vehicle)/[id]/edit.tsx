@@ -1,15 +1,15 @@
 import {
-    Ionicons,
+  Ionicons,
 } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    View
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View
 } from "react-native";
 
 import CircleIconButton from "@/components/Buttons/CircleIconButton";
@@ -120,10 +120,7 @@ export default function EditVehicleScreen() {
 
   if (loading || !vehicleData) {           
     return (
-      <View className="flex-1 justify-center items-center bg-black">
-        {/* TODO : Add loading animation here and check when you save */}
-        {/* <ActivityIndicator size="large" color="#00ff00" /> */}
-      </View>
+      <View className="flex-1 justify-center items-center"></View>
     );
   }
 

@@ -32,17 +32,17 @@ export default function HomeScreen() {
       <AppHeader
         type="home"
         title="GearNote"
-        rightIcon={<Ionicons name="settings" size={20} color="#B0B0B0" />}
+        rightIcon={<Ionicons name="settings" size={20} color="#fff" />}
         onRightPress={() => router.push("/(tabs)/settings")}
       />
       <View className="p-5">
           <View className="flex-row justify-between items-center mb-4">
             <View className="flex-row items-center">
-              <Ionicons name="home-sharp" size={20} color="#FFFFFF" />
+              <Ionicons name="home-sharp" size={20} color="#fff" />
               <Text className="text-white text-lg font-bold ml-3">Mi garaje</Text>
             </View>
             <Link href="/(vehicle)/create" asChild>
-              <Ionicons name="add" size={20} color="#FFFFFF" />
+              <Ionicons name="add" size={20} color="#fff" />
             </Link>
           </View>
           <View className="border-b-2 border-gray mb-3"></View>

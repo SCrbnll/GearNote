@@ -1,6 +1,6 @@
 import CustomButton from "@/components/Buttons/CustomButton";
 import FormInput from "@/components/Inputs/FormInput";
-import AlertModal from "@/components/Modals/AlertModal";
+import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
 import { APP_ICON } from "@/constants/global";
 import { initDatabase, insertUser } from "@/utils/database";
 import { restoreDatabaseFromJSON } from "@/utils/databaseBackup";
@@ -8,21 +8,22 @@ import { Ionicons } from "@expo/vector-icons";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
 import { Stack, router } from "expo-router";
-import { useState } from "react";
+import { JSX, useState } from "react";
 import {
   Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
-  View
+  View,
 } from "react-native";
 
 export default function AuthScreen() {
   const [username, setUsername] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalTitle, setmodalTitle] = useState("");
-  const [modalMessage, setModalMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [successText, setSuccessText] = useState("");
+  const [loadingText, setLoadingText] = useState("");
+  const [icon, setIcon] = useState<JSX.Element | null>(null);
 
   const handlePickFile = async () => {
     try {
@@ -38,44 +39,29 @@ export default function AuthScreen() {
 
         await restoreDatabaseFromJSON(jsonData);
 
-        setmodalTitle("Restauración exitosa");
-        setModalMessage("Tus datos han sido recuperados.");
-      } else {
-        setmodalTitle("Cancelado");
-        setModalMessage("La restauración fue cancelada.");
+        setLoadingText("Restaurando datos...");
+        setSuccessText("Datos restaurados con éxito");
+        setIcon(<Ionicons name="cloud-upload" size={90} color="#16a34a" />);
+        setShowSuccess(true);
       }
     } catch (err) {
       console.error("Error al restaurar:", err);
-      setmodalTitle("Error");
-      setModalMessage("No se pudo restaurar el archivo.");
-    } finally {
-      setModalVisible(true);
-    }
-  };
-
-  const handleModalClose = () => {
-    setModalVisible(false);
-    if (modalTitle === "Restauración exitosa") {
-      router.replace("/(tabs)/home");
     }
   };
 
   const handleRegister = async () => {
-    if (!username.trim()) {
-      setmodalTitle("Error");
-      setModalMessage("Por favor, ingresa un nombre de usuario.");
-      setModalVisible(true);
-      return;
-    }
+    if (!username.trim()) return;
+
     try {
       await initDatabase();
       await insertUser(username);
-      router.replace("/(tabs)/home");
+
+      setLoadingText("Creando cuenta...");
+      setSuccessText("Cuenta creada con éxito");
+      setIcon(<Ionicons name="person-add" size={90} color="#16a34a" />);
+      setShowSuccess(true);
     } catch (err) {
       console.error("Error al registrar usuario:", err);
-      setmodalTitle("Error");
-      setModalMessage("No se pudo registrar el usuario.");
-      setModalVisible(true);
     }
   };
 
@@ -132,12 +118,17 @@ export default function AuthScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-      <AlertModal
-        visible={modalVisible}
-        title={modalTitle}
-        description={modalMessage}
-        onCancel={handleModalClose}
-      />
+
+      {/* ✅ Overlay de éxito compartido */}
+      {showSuccess && (
+        <SuccessOverlay
+          loadingText={loadingText}
+          successText={successText}
+          successIcon={icon}
+          duration={3000}
+          onFinish={() => router.replace("/(tabs)/home")}
+        />
+      )}
     </>
   );
 }

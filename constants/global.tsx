@@ -5,6 +5,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
+import * as FileSystem from "expo-file-system";
 import React from "react";
 import { KeyboardTypeOptions } from "react-native";
 
@@ -13,6 +14,8 @@ export const DEFAULT_PFP = require("@/assets/images/user_pfp.png");
 export const APP_ICON = require("@/assets/images/gearnote-icon.png");
 export const SCRBNLL_WEB = "https://samuelcg.com";
 export const VERSION_APP = "2.0.0";
+export const DB_NAME = "gearnote.db";
+export const DB_PATH = FileSystem.documentDirectory + DB_NAME
 
 export interface Vehicle {
   name: string;
