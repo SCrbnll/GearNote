@@ -21,7 +21,7 @@ export default function AppFooter() {
         </View>
       </View>
 
-      <Text className="text-xs text-secondary">v{VERSION_APP}</Text>
+      <Text className="text-xs text-secondary">v {VERSION_APP}</Text>
     </View>
   );
 }

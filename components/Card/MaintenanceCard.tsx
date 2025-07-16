@@ -85,7 +85,7 @@ export default function MaintenanceCard({ item, onDeleted }: Props) {
             <MaterialIcons name="build" size={20} color="#B0B0B0" />
             <View className="flex-col">
               <Text className="text-white">{title}</Text>
-              <Text className="text-error">{item.date}</Text>
+              <Text className="text-error text-sm">{item.date}</Text>
             </View>
           </View>
           <Ionicons

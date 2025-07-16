@@ -1,6 +1,4 @@
-import {
-  Ionicons,
-} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -9,7 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  View
+  View,
 } from "react-native";
 
 import CircleIconButton from "@/components/Buttons/CircleIconButton";
@@ -18,9 +16,13 @@ import AppHeader from "@/components/Header/AppHeader";
 import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
 import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
-import { DEFAULT_VEHICLE_IMAGE, INPUT_FIELDS_VEHICLE } from "@/constants/global";
+import {
+  DEFAULT_VEHICLE_IMAGE,
+  INPUT_FIELDS_VEHICLE,
+} from "@/constants/global";
 import { Vehicle } from "@/types/type-db";
 import { getVehicleById, updateVehicle } from "@/utils/database";
+import { valueObjectMap } from "@/utils/valueObjects/vehicle";
 
 export default function EditVehicleScreen() {
   const { id } = useLocalSearchParams();
@@ -31,6 +33,9 @@ export default function EditVehicleScreen() {
   const [modalMessage, setModalMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [errors, setErrors] = useState<Partial<Record<keyof Vehicle, string>>>(
+    {}
+  );
 
   useEffect(() => {
     const fetchVehicle = async () => {
@@ -56,10 +61,15 @@ export default function EditVehicleScreen() {
 
   const updateField = (field: keyof Vehicle, value: string) => {
     if (!vehicleData) return;
+
     setVehicleData((prev) => ({
       ...prev!,
-      [field]:
-        field === "year" || field === "km_total" ? Number(value) || 0 : value,
+      [field]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [field]: "",
     }));
   };
 
@@ -95,22 +105,38 @@ export default function EditVehicleScreen() {
       "plate",
     ];
 
-    const missing = requiredFields.filter(
-      (field) =>
-        vehicleData[field] === "" ||
-        vehicleData[field] === 0 ||
-        vehicleData[field] === null
-    );
+    const newErrors: typeof errors = {};
+    const finalData: Partial<Vehicle> = {};
 
-    if (missing.length > 0) {
-      setModalMessage(`Faltan campos obligatorios: ${missing.join(", ")}`);
+    for (const field of requiredFields) {
+      try {
+        const rawValue = vehicleData[field];
+
+        const valueToValidate =
+          field === "plate" && typeof rawValue === "string"
+            ? rawValue.toUpperCase()
+            : rawValue;
+
+        const parser = valueObjectMap[field];
+        if (parser) {
+          const parsed = parser(valueToValidate);
+          finalData[field] = parsed;
+        }
+      } catch (error: any) {
+        newErrors[field] = error.message || "Valor inválido";
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setModalMessage("Corrige los errores antes de guardar.");
       setModalVisible(true);
       return;
     }
 
     try {
-      await updateVehicle(vehicleData);
-      setShowSuccess(true); 
+      await updateVehicle({ ...vehicleData, ...finalData });
+      setShowSuccess(true);
     } catch (error) {
       console.error("Error al actualizar vehículo:", error);
       setModalMessage("Error al actualizar el vehículo.");
@@ -118,17 +144,15 @@ export default function EditVehicleScreen() {
     }
   };
 
-  if (loading || !vehicleData) {           
-    return (
-      <View className="flex-1 justify-center items-center"></View>
-    );
+  if (loading || !vehicleData) {
+    return <View className="flex-1 justify-center items-center" />;
   }
 
   return (
     <>
       <AppHeader
-        type="backOptions" 
-        title="Editar vehículo"       
+        type="backOptions"
+        title="Editar vehículo"
         onBack={() => router.back()}
       />
 
@@ -165,7 +189,10 @@ export default function EditVehicleScreen() {
                 keyboardType={keyboardType}
                 multiline={multiline}
                 value={String(vehicleData[field] ?? "")}
-                onChangeText={(text: string) => updateField(field, text)}
+                error={errors[field]}
+                onChangeText={(text) =>
+                  updateField(field as keyof Vehicle, text)
+                }
               />
             )
           )}
@@ -193,7 +220,9 @@ export default function EditVehicleScreen() {
           onFinish={() => router.back()}
           loadingText="Aplicando cambios..."
           successText="Vehículo editado con éxito"
-          successIcon={<Ionicons name="checkmark-circle" size={90} color="#4CAF50" />}
+          successIcon={
+            <Ionicons name="checkmark-circle" size={90} color="#4CAF50" />
+          }
           duration={3000}
         />
       )}
