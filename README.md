@@ -1,50 +1,52 @@
-# Welcome to your Expo app 👋
+# GearNote - App de Mantenimiento de Vehículos
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**GearNote** es una aplicación móvil desarrollada con **Expo (React Native)** que te permite llevar un registro completo del mantenimiento de tus vehículos.
 
-## Get started
+Podrás guardar datos como el modelo, marca, matrícula, kilómetros, motor, ficha técnica, notas adicionales y hasta una imagen personalizada.
 
-1. Install dependencies
+🛠️ **Todos los datos se almacenan localmente en tu dispositivo**, sin necesidad de conexión a internet ni sincronización externa.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## 📲 Descargar la app lista para usar
 
-   ```bash
-   npx expo start
-   ```
+Si solo deseas usar la aplicación sin modificar el código:
 
-In the output, you'll find options to open the app in a
+1. Dirígete a la sección de [**releases del repositorio**](https://github.com/SCrbnll/GearNote/tree/main/releases).
+2. Descarga la **última versión disponible** (archivo `.apk` para Android).
+3. Instálala manualmente en tu dispositivo móvil.
+4. ¡Listo! Ya puedes comenzar a registrar y gestionar tus vehículos.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 🔐 Privacidad
 
-## Get a fresh project
+✅ **100% local**  
+> Tus datos no salen del dispositivo. No se suben a la nube ni se comparten con terceros.
 
-When you're ready, run:
+---
+
+## ⚙️ Requisitos previos (para desarrollo)
+
+Si prefieres ver o modificar el código fuente, estos son los requisitos para ejecutar el proyecto localmente:
+
+- [Node.js](https://nodejs.org/) (recomendado v18 o superior)
+- Emulador Android/iOS configurado o bien la app Expo Go instalada en tu dispositivo móvil: Google Play / App Store
+- **Expo CLI**, que puedes instalar globalmente con:
 
 ```bash
-npm run reset-project
+npm install -g expo-cli
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 🧪 Instalación y ejecución
 
-## Learn more
+1. Clona este repositorio en tu máquina local.
 
-To learn more about developing your project with Expo, look at the following resources:
+2. Abre una terminal y navega hasta la carpeta del proyecto.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+3. Ejecuta el siguiente comando:
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+npx expo start
+```
+> Escanea el QR que aparece en la terminal con la app Expo Go o ejecuta en un emulador.
