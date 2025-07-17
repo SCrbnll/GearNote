@@ -1,13 +1,13 @@
 export class MaintenanceDate {
   private value: string;
-  private static readonly DATE_REGEX = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+  private static readonly DATE_REGEX = /^(\d{2})-(\d{2})-(\d{4})$/;
 
   constructor(value: string) {
     if (!MaintenanceDate.DATE_REGEX.test(value)) {
-      throw new Error("La fecha debe tener formato DD/MM/YYYY.");
+      throw new Error("La fecha debe tener formato DD-MM-YYYY.");
     }
-    const [_, day, month, year] = value.match(MaintenanceDate.DATE_REGEX)!;
 
+    const [_, day, month, year] = value.match(MaintenanceDate.DATE_REGEX)!;
     const date = new Date(`${year}-${month}-${day}`);
 
     if (

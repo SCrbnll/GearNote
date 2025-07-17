@@ -13,9 +13,11 @@ export interface Vehicle {
   km_total: number;
   engine: string;
   plate: string;
-  technical_sheet?: string;
   additional_info?: string;
-  image_uri?: string; 
+  image_uri?: string;
+  fuel?: string;
+  itv?: string;
+  eco_label?: string; 
 }
 
 export interface Maintenance {
@@ -28,7 +30,7 @@ export interface Maintenance {
 
 
 export type BackupData = {
-  users: UserDB[];
+  user: UserDB[];
   vehicles: VehicleDB[];
   maintenances: MaintenanceDB[];
   exportedAt?: string;
@@ -45,9 +47,11 @@ type VehicleDB = {
   km_total: number;
   engine: string;
   plate: string;
-  technical_sheet: string;
   additional_info: string;
   image_uri: string;
+  fuel: string;
+  itv: string;
+  eco_label: string;
 };
 type MaintenanceDB = {
   id: number;

@@ -1,7 +1,7 @@
 import { Maintenance, User, Vehicle } from "@/types/type-db";
 import * as SQLite from "expo-sqlite";
 
-const db = SQLite.openDatabaseSync("gearnote2.db");
+const db = SQLite.openDatabaseSync("gearnote_v2-1-0.db");
 
 // 🟢 Inicialización de la BD
 export async function initDatabase() {
@@ -21,9 +21,11 @@ export async function initDatabase() {
         km_total INTEGER,
         engine TEXT,
         plate TEXT,
-        technical_sheet TEXT,
         additional_info TEXT,
-        image_uri TEXT
+        image_uri TEXT,
+        fuel TEXT,
+        itv TEXT,
+        eco_label TEXT
       );
 
       CREATE TABLE IF NOT EXISTS maintenances (
@@ -52,9 +54,9 @@ export async function insertUser(name: string) {
 export async function insertVehicle(vehicle: Vehicle) {
   const statement = await db.prepareAsync(`
       INSERT INTO vehicles (
-        name, brand, model, year, color, km_total, engine, plate, technical_sheet, additional_info, image_uri
+        name, brand, model, year, color, km_total, engine, plate, additional_info, image_uri, fuel, itv, eco_label
       ) VALUES (
-        $name, $brand, $model, $year, $color, $km_total, $engine, $plate, $technical_sheet, $additional_info, $image_uri
+        $name, $brand, $model, $year, $color, $km_total, $engine, $plate, $additional_info, $image_uri, $fuel, $itv, $eco_label
       )
     `);
 
@@ -68,9 +70,11 @@ export async function insertVehicle(vehicle: Vehicle) {
       $km_total: vehicle.km_total,
       $engine: vehicle.engine.trim(),
       $plate: vehicle.plate.trim(),
-      $technical_sheet: vehicle.technical_sheet ? vehicle.technical_sheet.trim() : "",
       $additional_info: vehicle.additional_info ? vehicle.additional_info.trim() : "",
       $image_uri: vehicle.image_uri ? vehicle.image_uri.trim() : "",
+      $fuel: vehicle.fuel ? vehicle.fuel.trim() : "",
+      $itv: vehicle.itv ? vehicle.itv.trim() : "",
+      $eco_label: vehicle.eco_label ? vehicle.eco_label.trim() : "",
     });
   } finally {
     await statement.finalizeAsync();
@@ -108,9 +112,11 @@ export async function updateVehicle(vehicle: Vehicle) {
         km_total = $km_total,
         engine = $engine,
         plate = $plate,
-        technical_sheet = $technical_sheet,
         additional_info = $additional_info,
-        image_uri = $image_uri
+        image_uri = $image_uri,
+        fuel = $fuel,
+        itv = $itv,
+        eco_label = $eco_label
       WHERE id = $id
     `);
   try {
@@ -124,9 +130,11 @@ export async function updateVehicle(vehicle: Vehicle) {
       $km_total: vehicle.km_total,
       $engine: vehicle.engine.trim(),
       $plate: vehicle.plate.trim(),
-      $technical_sheet: vehicle.technical_sheet ? vehicle.technical_sheet.trim() : "",
       $additional_info: vehicle.additional_info ? vehicle.additional_info.trim() : "",
       $image_uri: vehicle.image_uri ? vehicle.image_uri.trim() : "",
+      $fuel: vehicle.fuel ? vehicle.fuel.trim() : "",
+      $itv: vehicle.itv ? vehicle.itv.trim() : "",
+      $eco_label: vehicle.eco_label ? vehicle.eco_label.trim() : "",
     });
   } finally {
     await statement.finalizeAsync();

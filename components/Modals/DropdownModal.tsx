@@ -6,14 +6,16 @@ type Option = {
 };
 
 type Props = {
+  header: string;
   visible: boolean;
   options: Option[];
-  onSelect: (value: number) => void;
+  onSelect: (value: any) => void;
   onCancel: () => void;
   selectedValue: number;
 };
 
 export default function DropdownModal({
+  header,
   visible,
   options,
   onSelect,
@@ -25,7 +27,7 @@ export default function DropdownModal({
       <View className="flex-1 bg-black/50 justify-center items-center px-6">
         <View className="bg-ui-header w-full rounded-xl p-4">
           <Text className="text-primary font-bold text-lg mb-4">
-            Seleccionar vehículo
+            {header}
           </Text>
 
           <ScrollView className="max-h-[300px]">

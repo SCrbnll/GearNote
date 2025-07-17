@@ -15,9 +15,14 @@ import CustomButton from "@/components/Buttons/CustomButton";
 import AppHeader from "@/components/Header/AppHeader";
 import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
+import DropdownModal from "@/components/Modals/DropdownModal";
 import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
+
+import TouchableInput from "@/components/Inputs/TouchableInput";
 import {
   DEFAULT_VEHICLE_IMAGE,
+  ECO_LABEL_OPTIONS,
+  FUEL_OPTIONS,
   INPUT_FIELDS_VEHICLE,
 } from "@/constants/global";
 import { Vehicle } from "@/types/type-db";
@@ -36,7 +41,6 @@ export default function CreateVehicleScreen() {
     km_total: 0,
     engine: "",
     plate: "",
-    technical_sheet: "",
     additional_info: "",
     image_uri: "",
   });
@@ -47,6 +51,14 @@ export default function CreateVehicleScreen() {
   const [errors, setErrors] = useState<Partial<Record<keyof Vehicle, string>>>(
     {}
   );
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [dropdownOptions, setDropdownOptions] = useState<
+    { label: string; value: string | number }[]
+  >([]);
+  const [dropdownField, setDropdownField] = useState<keyof Vehicle | null>(
+    null
+  );
+  const [dropdownHeader, setDropdownHeader] = useState<string>("");
 
   const updateField = (field: keyof Vehicle, value: string) => {
     setVehicleData((prev) => ({
@@ -75,6 +87,30 @@ export default function CreateVehicleScreen() {
     }
   };
 
+  const openDropdown = (field: keyof Vehicle) => {
+    if (field === "fuel") {
+      setDropdownHeader("Combustible");
+      setDropdownOptions(
+        FUEL_OPTIONS.map((opt) => ({ label: opt, value: opt }))
+      );
+    } else if (field === "eco_label") {
+      setDropdownHeader("Distintivo Medioambiental");
+      setDropdownOptions(
+        ECO_LABEL_OPTIONS.map((opt) => ({ label: opt, value: opt }))
+      );
+    }
+
+    setDropdownField(field);
+    setDropdownVisible(true);
+  };
+
+  const handleSelect = (value: string | number) => {
+  if (dropdownField) {
+    updateField(dropdownField, String(value));
+    setDropdownVisible(false);
+  }
+};
+
   const handleSave = async () => {
     const requiredFields: (keyof Vehicle)[] = [
       "name",
@@ -82,6 +118,7 @@ export default function CreateVehicleScreen() {
       "model",
       "year",
       "km_total",
+      "fuel",
       "engine",
       "plate",
     ];
@@ -101,9 +138,13 @@ export default function CreateVehicleScreen() {
 
       try {
         const valueToValidate =
-          field === "plate" && typeof rawValue === "string"
-            ? rawValue.toUpperCase()
-            : rawValue;
+          typeof rawValue === "string"
+            ? field === "plate"
+              ? rawValue.toUpperCase()
+              : rawValue.trim()
+            : rawValue !== undefined && rawValue !== null
+              ? String(rawValue)
+              : "";
 
         const parser = valueObjectMap[field];
         if (parser) {
@@ -164,21 +205,37 @@ export default function CreateVehicleScreen() {
           </View>
 
           {INPUT_FIELDS_VEHICLE.map(
-            ({ label, field, placeholder, icon, keyboardType, multiline }) => (
-              <FormInput
-                key={field}
-                label={label}
-                icon={icon}
-                placeholder={placeholder}
-                keyboardType={keyboardType}
-                value={String(vehicleData[field] ?? "")}
-                multiline={multiline}
-                error={errors[field]}
-                onChangeText={(text) =>
-                  updateField(field as keyof Vehicle, text)
-                }
-              />
-            )
+            ({ label, field, placeholder, icon, keyboardType, multiline }) => {
+              if (field === "fuel" || field === "eco_label") {
+                return (
+                  <TouchableInput
+                    key={field}
+                    label={label}
+                    icon={icon}
+                    placeholder={placeholder}
+                    value={vehicleData[field] ?? ""}
+                    error={errors[field]}
+                    onPress={() => openDropdown(field as keyof Vehicle)}
+                  />
+                );
+              }
+
+              return (
+                <FormInput
+                  key={field}
+                  label={label}
+                  icon={icon}
+                  placeholder={placeholder}
+                  keyboardType={keyboardType}
+                  value={String(vehicleData[field] ?? "")}
+                  multiline={multiline}
+                  error={errors[field]}
+                  onChangeText={(text) =>
+                    updateField(field as keyof Vehicle, text)
+                  }
+                />
+              );
+            }
           )}
 
           <CustomButton
@@ -190,6 +247,15 @@ export default function CreateVehicleScreen() {
           <View className="h-16" />
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <DropdownModal
+        header={dropdownHeader}
+        visible={dropdownVisible}
+        options={dropdownOptions}
+        selectedValue={Number(vehicleData[dropdownField ?? "fuel"]) || 0}
+        onSelect={handleSelect}
+        onCancel={() => setDropdownVisible(false)}
+      />
 
       <AlertModal
         visible={modalVisible}

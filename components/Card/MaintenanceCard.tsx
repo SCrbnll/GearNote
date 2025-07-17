@@ -111,7 +111,7 @@ export default function MaintenanceCard({ item, onDeleted }: Props) {
             </View>
             <CircleIconButton
               size={25}
-              style={{ position: "absolute", right: 8, bottom: 8 }}
+              style={{ position: "absolute", right: 0, bottom: 8 }}
               icon={
                 <Ionicons name="ellipsis-vertical" size={14} color="#B0B0B0" />
               }

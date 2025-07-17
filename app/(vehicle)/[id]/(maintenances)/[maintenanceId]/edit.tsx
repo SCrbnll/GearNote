@@ -12,7 +12,6 @@ import CustomButton from "@/components/Buttons/CustomButton";
 import AppHeader from "@/components/Header/AppHeader";
 import FormInput from "@/components/Inputs/FormInput";
 import AlertModal from "@/components/Modals/AlertModal";
-import DropdownModal from "@/components/Modals/DropdownModal";
 import SuccessOverlay from "@/components/Overlay/SuccessOverlay";
 
 import { INPUT_FIELDS_MAINTENANCE } from "@/constants/global";
@@ -36,7 +35,6 @@ export default function EditMaintenanceScreen() {
   });
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [showVehicleModal, setShowVehicleModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [errors, setErrors] = useState<Partial<Record<keyof Maintenance, string>>>({});
@@ -169,20 +167,6 @@ export default function EditMaintenanceScreen() {
           <View className="h-16" />
         </ScrollView>
       </KeyboardAvoidingView>
-
-      <DropdownModal
-        visible={showVehicleModal}
-        selectedValue={maintenanceData.vehicle_id}
-        onSelect={(value) => {
-          updateField("vehicle_id", value);
-          setShowVehicleModal(false);
-        }}
-        onCancel={() => setShowVehicleModal(false)}
-        options={vehicles.map((v) => ({
-          label: `${v.name} (${v.brand} ${v.model})`,
-          value: v.id,
-        }))}
-      />
 
       <AlertModal
         visible={modalVisible}
