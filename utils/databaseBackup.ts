@@ -14,7 +14,13 @@ function fillMissingFields<T extends Record<string, any>>(
 ): T {
   const filled: any = {};
   for (const col of columns) {
-    filled[col] = data[col] ?? (typeof data[col] === "number" ? 0 : "");
+    const value = data?.[col];
+    filled[col] =
+      value !== undefined && value !== null
+        ? value
+        : typeof value === "number"
+        ? 0
+        : "";
   }
   return filled;
 }
@@ -25,6 +31,7 @@ export async function exportDatabaseToJSON(): Promise<void> {
     const fullData: any = {};
 
     for (const table of tables) {
+      
       const rows = await db.getAllAsync(`SELECT * FROM ${table}`);
       fullData[table] = rows;
     }
@@ -57,27 +64,41 @@ export async function restoreDatabaseFromJSON(data: BackupData) {
     await initDatabase();
 
     const tableConfigs = [
-      { name: "user", data: data.users },
+      { name: "user", data: data.user },
       { name: "vehicles", data: data.vehicles },
       { name: "maintenances", data: data.maintenances },
     ];
 
     for (const { name, data: rows } of tableConfigs) {
-      const columns = await getTableColumns(name);
-      const placeholders = columns.map(() => "?").join(", ");
-      const insertSQL = `INSERT INTO ${name} (${columns.join(", ")}) VALUES (${placeholders})`;
+  if (!Array.isArray(rows)) {
+    console.warn(`No hay datos válidos para la tabla "${name}"`);
+    continue;
+  }
 
-      for (const row of rows) {
-        const filledRow = fillMissingFields(row, columns);
+  const columns = await getTableColumns(name);
+  const placeholders = columns.map(() => "?").join(", ");
+  const insertSQL = `INSERT INTO ${name} (${columns.join(", ")}) VALUES (${placeholders})`;
 
-       if (name === "vehicles" && "image_uri" in filledRow && typeof filledRow.image_uri === "string") {
-        filledRow.image_uri = await getValidImageUri(filledRow.image_uri);
-      }
-
-        const values = columns.map((col) => (filledRow as any)[col]);
-        await db.runAsync(insertSQL, values);
-      }
+  for (const row of rows) {
+    if (!row || typeof row !== "object") {
+      console.warn("Fila inválida encontrada:", row);
+      continue;
     }
+
+    const filledRow = fillMissingFields(row, columns);
+
+    if (
+      name === "vehicles" &&
+      "image_uri" in filledRow &&
+      typeof filledRow.image_uri === "string"
+    ) {
+      filledRow.image_uri = await getValidImageUri(filledRow.image_uri);
+    }
+
+    const values = columns.map((col) => (filledRow as any)[col]);
+    await db.runAsync(insertSQL, values);
+  }
+}
 
     return true;
   } catch (error) {

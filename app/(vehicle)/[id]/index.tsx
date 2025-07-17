@@ -61,7 +61,6 @@ export default function VehicleInfoScreen() {
             new Promise((resolve) => setTimeout(resolve, 1000)),
           ]);
           if (isActive && vehicle) {
-            console.log(vehicle)
             setVehicleData(vehicle);
             setIsLoading(false);
           }

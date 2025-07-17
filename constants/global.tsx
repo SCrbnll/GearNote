@@ -123,7 +123,7 @@ export const INPUT_FIELDS_MAINTENANCE: {
   field: keyof Maintenance;
   placeholder?: string;
   icon?: React.ReactNode;
-  keyboardType?: "default" | "numbers-and-punctuation" | "url";
+  keyboardType?: "default" | "numeric" | "url";
   multiline?: boolean;
   numberOfLines?: number;
 }[] = [
@@ -131,7 +131,7 @@ export const INPUT_FIELDS_MAINTENANCE: {
     label: "Fecha *",
     field: "date",
     placeholder: "Ej: 01-01-2001",
-    keyboardType: "numbers-and-punctuation",
+    keyboardType: "numeric",
     icon: <Ionicons name="calendar" size={18} color="#FE9525" />,
   },
   {

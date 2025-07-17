@@ -14,6 +14,11 @@ export default function MaintenanceScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
 
+  const parseDateDMY = (dateStr: string) => {
+    const [day, month, year] = dateStr.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
+  
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
@@ -61,11 +66,6 @@ export default function MaintenanceScreen() {
       </View>
     );
   }
-
-  const parseDateDMY = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  };
 
   const displayDate = (dateStr: string): string => {
     return dateStr.replace(/-/g, "/");

@@ -30,7 +30,7 @@ export interface Maintenance {
 
 
 export type BackupData = {
-  users: UserDB[];
+  user: UserDB[];
   vehicles: VehicleDB[];
   maintenances: MaintenanceDB[];
   exportedAt?: string;
