@@ -124,7 +124,7 @@ export default function EditVehicleScreen() {
 
   const handleSelect = (value: string) => {
     if (dropdownField) {
-      updateField(dropdownField, value); // 👈 Ya no pasamos .toString()
+      updateField(dropdownField, value); 
       setDropdownVisible(false);
     }
   };

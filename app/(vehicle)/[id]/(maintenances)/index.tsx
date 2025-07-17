@@ -63,8 +63,12 @@ export default function MaintenanceScreen() {
   }
 
   const parseDateDMY = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("/").map(Number);
+    const [day, month, year] = dateStr.split("-").map(Number);
     return new Date(year, month - 1, day);
+  };
+
+  const displayDate = (dateStr: string): string => {
+    return dateStr.replace(/-/g, "/");
   };
 
   return (
@@ -84,7 +88,7 @@ export default function MaintenanceScreen() {
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
             <MaintenanceCard
-              item={item}
+              item={{ ...item, date: displayDate(item.date) }}
               onDeleted={(idToRemove) => {
                 setMaintenances((prev) =>
                   prev.filter((m) => m.id !== idToRemove)

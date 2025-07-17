@@ -1,7 +1,7 @@
 import { Maintenance, User, Vehicle } from "@/types/type-db";
 import * as SQLite from "expo-sqlite";
 
-const db = SQLite.openDatabaseSync("gearnote_v2-0-5.db");
+const db = SQLite.openDatabaseSync("gearnote_v2-1-0.db");
 
 // 🟢 Inicialización de la BD
 export async function initDatabase() {
