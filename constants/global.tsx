@@ -16,6 +16,8 @@ export const SCRBNLL_WEB = "https://samuelcg.com";
 export const VERSION_APP = "2.0.2";
 export const DB_NAME = "gearnote.db";
 export const DB_PATH = FileSystem.documentDirectory + DB_NAME
+export const FUEL_OPTIONS = ["Gasolina", "Diesel", "Hibrido", "Electrico"] ;
+export const ECO_LABEL_OPTIONS = ["B", "C", "ECO", "0 Emisiones"];
 
 export interface Vehicle {
   name: string;
@@ -26,9 +28,11 @@ export interface Vehicle {
   km_total: number;
   engine: string;
   plate: string;
-  technical_sheet: string;
   additional_info: string;
   image_uri: string;
+  fuel: string;
+  itv: string;
+  eco_label: string;
 }
 
 export const INPUT_FIELDS_VEHICLE: {
@@ -64,17 +68,17 @@ export const INPUT_FIELDS_VEHICLE: {
     icon: <Ionicons name="calendar" size={18} color="#FE9525" />,
   },
   {
-    label: "Color",
-    field: "color",
-    placeholder: "Ej: Negro",
-    icon: <Ionicons name="color-palette" size={18} color="#FE9525" />,
-  },
-  {
     label: "Kilómetros totales *",
     field: "km_total",
     placeholder: "0",
     keyboardType: "numeric",
     icon: <MaterialIcons name="speed" size={18} color="#FE9525" />,
+  },
+  {
+    label: "Combustible *",
+    field: "fuel",
+    placeholder: "Seleccione un tipo de combustible",
+    icon: <MaterialIcons name="local-gas-station" size={18} color="#FE9525" />,
   },
   {
     label: "Motor *",
@@ -89,11 +93,22 @@ export const INPUT_FIELDS_VEHICLE: {
     icon: <FontAwesome5 name="tag" solid size={18} color="#FE9525" />,
   },
   {
-    label: "Ficha técnica (URL)",
-    field: "technical_sheet",
-    placeholder: "https://ejemplo.com/ficha.pdf",
-    keyboardType: "url",
-    icon: <MaterialIcons name="description" size={18} color="#FE9525" />,
+    label: "ITV",
+    field: "itv",
+    placeholder: "MM/AAAA",
+    icon: <Ionicons name="calendar" size={18} color="#FE9525" />,
+  },
+  {
+    label: "Distintivo Medioambiental",
+    field: "eco_label",
+    placeholder: "Seleccione un distintivo medioambiental",
+    icon: <Ionicons name="leaf" size={18} color="#FE9525" />,
+  },
+  {
+    label: "Color",
+    field: "color",
+    placeholder: "Ej: Negro",
+    icon: <Ionicons name="color-palette" size={18} color="#FE9525" />,
   },
   {
     label: "Información adicional",

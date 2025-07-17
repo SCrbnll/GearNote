@@ -1,17 +1,19 @@
 import { VehicleAdditionalInfo } from "./VehicleAdditionalInfo";
 import { VehicleBrand } from "./VehicleBrand";
 import { VehicleColor } from "./VehicleColor";
+import { VehicleEcoLabel } from "./VehicleEcoLabel";
 import { VehicleEngine } from "./VehicleEngine";
+import { VehicleFuel } from "./VehicleFuel";
+import { VehicleItv } from "./VehicleItv";
 import { VehicleKilometers } from "./VehicleKilometers";
 import { VehicleModel } from "./VehicleModel";
 import { VehicleName } from "./VehicleName";
 import { VehiclePlate } from "./VehiclePlate";
-import { VehicleTechnicalSheet } from "./VehicleTechnicalSheet";
 import { VehicleYear } from "./VehicleYear";
 
 export {
-  VehicleAdditionalInfo, VehicleBrand, VehicleColor, VehicleEngine, VehicleKilometers, VehicleModel, VehicleName, VehiclePlate,
-  VehicleTechnicalSheet, VehicleYear
+  VehicleAdditionalInfo, VehicleBrand, VehicleColor, VehicleEcoLabel, VehicleEngine, VehicleFuel, VehicleItv, VehicleKilometers, VehicleModel, VehicleName, VehiclePlate,
+  VehicleYear
 };
 
     import type { Vehicle } from "@/types/type-db";
@@ -27,7 +29,9 @@ export const valueObjectMap: Partial<Record<FieldKey, (value: any) => any>> = {
   km_total: (v) => new VehicleKilometers(Number(v)).getValue(),
   engine: (v) => new VehicleEngine(v).getValue(),
   plate: (v) => new VehiclePlate(v).getValue(),
-  technical_sheet: (v) => new VehicleTechnicalSheet(v).getValue(),
   additional_info: (v) => new VehicleAdditionalInfo(v).getValue(),
   image_uri: (v) => new VehicleAdditionalInfo(v).getValue(),
+  itv: (v) => new VehicleItv(v).getValue(),
+  fuel: (v) => new VehicleFuel(v).getValue(),
+  eco_label: (v) => new VehicleEcoLabel(v).getValue(),
 };

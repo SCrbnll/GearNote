@@ -21,10 +21,9 @@ import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Image,
-  Linking,
   ScrollView,
   Text,
-  View,
+  View
 } from "react-native";
 
 export default function VehicleInfoScreen() {
@@ -62,6 +61,7 @@ export default function VehicleInfoScreen() {
             new Promise((resolve) => setTimeout(resolve, 1000)),
           ]);
           if (isActive && vehicle) {
+            console.log(vehicle)
             setVehicleData(vehicle);
             setIsLoading(false);
           }
@@ -85,11 +85,6 @@ export default function VehicleInfoScreen() {
     );
   }
 
-  const handleRedirect = () => {
-    setModalType("redirect");
-    setShowConfirm(true);
-  };
-
   const handleMaintenances = () => {
     router.push(`/(vehicle)/${vehicleData!.id}/(maintenances)`);
   };
@@ -105,9 +100,7 @@ export default function VehicleInfoScreen() {
   };
 
   const confirmAction = async () => {
-    if (modalType === "redirect") {
-      Linking.openURL(vehicleData!.technical_sheet!);
-    } else if (modalType === "delete") {
+    if (modalType === "delete") {
       try {
         await deleteVehicleAndMaintenancesById(vehicleData!.id!);
         setShowSuccess(true);
@@ -163,24 +156,9 @@ export default function VehicleInfoScreen() {
             Año {vehicleData!.year}
           </Text>
 
-          <VehicleInfoCard vehicle={vehicleData} />
+          <VehicleInfoCard vehicle={vehicleData!} />
           <View className="mb-3 gap-2">
-            {vehicleData!.technical_sheet && (
-              <CustomButton
-                icon={
-                  <MaterialIcons
-                    name="document-scanner"
-                    size={20}
-                    color="#FE9525"
-                  />
-                }
-                onPress={handleRedirect}
-                text="Visualizar ficha técnica"
-                type="info"
-                size="sm"
-              />
-            )}
-
+            
             <CustomButton
               icon={
                 <MaterialCommunityIcons

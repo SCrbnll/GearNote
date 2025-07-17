@@ -3,21 +3,35 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import db, { initDatabase } from "./database";
 
+async function getTableColumns(tableName: string): Promise<string[]> {
+  const result = await db.getAllAsync(`PRAGMA table_info(${tableName})`);
+  return result.map((col: any) => col.name);
+}
+
+function fillMissingFields<T extends Record<string, any>>(
+  data: T,
+  columns: string[]
+): T {
+  const filled: any = {};
+  for (const col of columns) {
+    filled[col] = data[col] ?? (typeof data[col] === "number" ? 0 : "");
+  }
+  return filled;
+}
+
 export async function exportDatabaseToJSON(): Promise<void> {
   try {
-    const users = await db.getAllAsync("SELECT * FROM user");
-    const vehicles = await db.getAllAsync("SELECT * FROM vehicles");
-    const maintenances = await db.getAllAsync("SELECT * FROM maintenances");
+    const tables = ["user", "vehicles", "maintenances"];
+    const fullData: any = {};
 
-    const fullData = {
-      users,
-      vehicles,
-      maintenances,
-      exportedAt: new Date().toISOString(),
-    };
+    for (const table of tables) {
+      const rows = await db.getAllAsync(`SELECT * FROM ${table}`);
+      fullData[table] = rows;
+    }
 
-    const json = JSON.stringify(fullData, null, 2); 
+    fullData.exportedAt = new Date().toISOString();
 
+    const json = JSON.stringify(fullData, null, 2);
     const fileUri = FileSystem.documentDirectory + "gearnote-backup.json";
 
     await FileSystem.writeAsStringAsync(fileUri, json, {
@@ -42,47 +56,27 @@ export async function restoreDatabaseFromJSON(data: BackupData) {
   try {
     await initDatabase();
 
-    for (const user of data.users) {
-      await db.runAsync(
-        `INSERT INTO user (id, name) VALUES (?, ?)`,
-        [user.id, user.name]
-      );
-    }
+    const tableConfigs = [
+      { name: "user", data: data.users },
+      { name: "vehicles", data: data.vehicles },
+      { name: "maintenances", data: data.maintenances },
+    ];
 
-    for (const vehicle of data.vehicles) {
-      await db.runAsync(
-        `INSERT INTO vehicles 
-        (id, name, brand, model, year, color, km_total, engine, plate, technical_sheet, additional_info, image_uri)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          vehicle.id,
-          vehicle.name,
-          vehicle.brand,
-          vehicle.model,
-          vehicle.year,
-          vehicle.color,
-          vehicle.km_total,
-          vehicle.engine,
-          vehicle.plate,
-          vehicle.technical_sheet,
-          vehicle.additional_info,
-          vehicle.image_uri
-        ]
-      );
-    }
+    for (const { name, data: rows } of tableConfigs) {
+      const columns = await getTableColumns(name);
+      const placeholders = columns.map(() => "?").join(", ");
+      const insertSQL = `INSERT INTO ${name} (${columns.join(", ")}) VALUES (${placeholders})`;
 
-    for (const maintenance of data.maintenances) {
-      await db.runAsync(
-        `INSERT INTO maintenances (id, title, description, date, vehicle_id)
-         VALUES (?, ?, ?, ?, ?)`,
-        [
-          maintenance.id,
-          maintenance.title,
-          maintenance.description,
-          maintenance.date,
-          maintenance.vehicle_id,
-        ]
-      );
+      for (const row of rows) {
+        const filledRow = fillMissingFields(row, columns);
+
+       if (name === "vehicles" && "image_uri" in filledRow && typeof filledRow.image_uri === "string") {
+        filledRow.image_uri = await getValidImageUri(filledRow.image_uri);
+      }
+
+        const values = columns.map((col) => (filledRow as any)[col]);
+        await db.runAsync(insertSQL, values);
+      }
     }
 
     return true;
@@ -92,3 +86,12 @@ export async function restoreDatabaseFromJSON(data: BackupData) {
   }
 }
 
+export async function getValidImageUri(imageUri: string): Promise<string> {
+  const fileInfo = await FileSystem.getInfoAsync(imageUri);
+
+  if (fileInfo.exists) {
+    return imageUri;
+  } else {
+    return "";
+  }
+}
