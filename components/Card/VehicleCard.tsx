@@ -37,9 +37,18 @@ export default function VehicleCard({
         />
 
         <View className="flex-1">
-          <Text className="text-primary font-semibold text-base">{name}</Text>
-          <Text className="text-secondary text-sm">{brand} {model}</Text>
-          <Text className="text-secondary text-sm">{engine}</Text>
+          {name ? (
+            <>
+              <Text className="text-primary font-semibold text-base">{name}</Text>
+              <Text className="text-secondary text-sm">{brand} {model}</Text>
+              <Text className="text-secondary text-sm">{engine}</Text>
+            </>
+          ) : (
+            <>
+              <Text className="text-primary font-semibold text-base">{brand} {model}</Text>
+              <Text className="text-secondary text-sm">{engine}</Text>
+            </>
+          )}
         </View>
 
         <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />

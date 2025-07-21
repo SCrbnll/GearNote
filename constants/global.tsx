@@ -13,7 +13,7 @@ export const DEFAULT_VEHICLE_IMAGE = require("@/assets/images/vehicle_banner.jpg
 export const DEFAULT_PFP = require("@/assets/images/user_pfp.png");
 export const APP_ICON = require("@/assets/images/gearnote-icon.png");
 export const SCRBNLL_WEB = "https://samuelcg.com";
-export const VERSION_APP = "2.1.0";
+export const VERSION_APP = "2.1.1";
 export const DB_NAME = "gearnote.db";
 export const DB_PATH = FileSystem.documentDirectory + DB_NAME
 export const FUEL_OPTIONS = ["Gasolina", "Diesel", "Hibrido", "Electrico"] ;
@@ -44,7 +44,7 @@ export const INPUT_FIELDS_VEHICLE: {
   multiline?: boolean;
 }[] = [
   {
-    label: "Nombre (Mote) *",
+    label: "Nombre (Mote)",
     field: "name",
     placeholder: "Ej: Mi coche",
     icon: <FontAwesome5 name="id-badge" solid size={18} color="#FE9525" />,

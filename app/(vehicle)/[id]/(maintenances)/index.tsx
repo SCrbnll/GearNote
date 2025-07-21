@@ -75,7 +75,7 @@ export default function MaintenanceScreen() {
     <>
       <AppHeader
         type="backOptions"
-        title={`Matenimientos ${vehicle?.name}`}
+        title={vehicle?.name ? `Mantenimientos ${vehicle.name}` : `Mantenimientos ${vehicle?.brand} ${vehicle?.model}`}
         rightIcon={<Ionicons name="add" size={20} color="#B0B0B0" />}
         onBack={() => router.back()}
         onRightPress={() =>

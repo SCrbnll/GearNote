@@ -133,7 +133,6 @@ export default function EditVehicleScreen() {
     if (!vehicleData) return;
 
     const requiredFields: (keyof Vehicle)[] = [
-      "name",
       "brand",
       "model",
       "year",
