@@ -149,7 +149,7 @@ export default function VehicleInfoScreen() {
 
         <View className="px-6 pt-5">
           <Text className="text-primary text-2xl font-bold">
-            {vehicleData!.brand} {vehicleData!.model} ({vehicleData!.name})
+            {vehicleData!.name ? `${vehicleData!.brand} ${vehicleData!.model} (${vehicleData!.name})` : `${vehicleData!.brand} ${vehicleData!.model}`}
           </Text>
           <Text className="text-error text-sm mt-1 mb-2">
             Año {vehicleData!.year}

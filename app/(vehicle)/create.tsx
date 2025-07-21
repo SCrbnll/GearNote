@@ -113,7 +113,6 @@ export default function CreateVehicleScreen() {
 
   const handleSave = async () => {
     const requiredFields: (keyof Vehicle)[] = [
-      "name",
       "brand",
       "model",
       "year",

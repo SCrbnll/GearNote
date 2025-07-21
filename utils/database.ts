@@ -62,7 +62,7 @@ export async function insertVehicle(vehicle: Vehicle) {
 
   try {
     await statement.executeAsync({
-      $name: vehicle.name.trim(),
+      $name: vehicle.name ? vehicle.name.trim() : "",
       $brand: vehicle.brand.trim(),
       $model: vehicle.model.trim(),
       $year: String(vehicle.year),
@@ -122,7 +122,7 @@ export async function updateVehicle(vehicle: Vehicle) {
   try {
     await statement.executeAsync({
       $id: vehicle.id ?? null,
-      $name: vehicle.name.trim(),
+      $name: vehicle.name ? vehicle.name.trim() : "",
       $brand: vehicle.brand.trim(),
       $model: vehicle.model.trim(),
       $year: String(vehicle.year),
